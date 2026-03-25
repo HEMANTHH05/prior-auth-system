@@ -1,0 +1,35 @@
+
+POLICY DOCUMENT: Lumbar Spine Surgery - Medicare Coverage
+APPLICABLE PLANS: Medicare, Dual Eligible
+PROCEDURE CODES: 63030, 63047, 22612, 22630
+
+MEDICARE SURGICAL COVERAGE CRITERIA:
+
+1. MEDICAL NECESSITY:
+   - Surgery must be medically necessary
+   - Non-surgical treatment must have been attempted
+   - Clinical documentation must support surgical intervention
+   - Benefits must outweigh risks
+
+2. MEDICARE SPECIFIC REQUIREMENTS:
+   - Pre-admission testing coverage
+   - Surgeon must be Medicare enrolled
+   - Facility must be Medicare certified
+   - Anesthesia coverage requirements
+
+3. INPATIENT VS OUTPATIENT:
+   - Simple discectomy may be outpatient
+   - Complex procedures typically inpatient
+   - Two-midnight rule applies for inpatient stays
+   - Observation status considerations
+
+4. COVERAGE LIMITATIONS:
+   - Experimental procedures not covered
+   - Procedures without FDA approval
+   - Services not reasonable and necessary
+
+MEDICARE PAYMENT:
+- DRG payment for inpatient procedures
+- APC payment for outpatient procedures
+- 20% coinsurance applies
+- Additional costs for implants and devices

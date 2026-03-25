@@ -1,0 +1,41 @@
+
+POLICY DOCUMENT: Cardiac Stress Testing
+APPLICABLE PLANS: Aetna, Anthem, Blue Cross Blue Shield,
+                  Cigna Health, Humana, UnitedHealthcare
+PROCEDURE CODES: 93015 (Treadmill stress test)
+                 93351 (Stress echocardiogram)
+                 78451 (Nuclear stress test SPECT)
+
+COVERAGE CRITERIA:
+
+1. INDICATIONS FOR STRESS TESTING:
+   - Chest pain evaluation - typical or atypical angina
+   - Shortness of breath with suspected cardiac etiology
+   - Pre-operative cardiac risk assessment
+   - Known coronary artery disease monitoring
+   - Post-cardiac event risk stratification
+   - Evaluation of exercise capacity
+
+2. APPROPRIATE USE CRITERIA:
+   - Intermediate pretest probability of coronary disease
+   - New or changed symptoms in known CAD patient
+   - Risk stratification after acute coronary syndrome
+   - Evaluation of revascularization treatment
+
+3. DOCUMENTATION REQUIRED:
+   - Cardiology or internal medicine referral
+   - Symptoms and duration documented
+   - Risk factors documented (diabetes, hypertension, 
+     hyperlipidemia, smoking, family history)
+   - Resting ECG results
+   - Recent laboratory results
+
+4. MODALITY SELECTION:
+   Standard Exercise Test: First-line for patients who can exercise
+   Stress Echo: When resting ECG abnormal or better sensitivity needed
+   Nuclear Stress: When other modalities inconclusive or high-risk
+
+NOT COVERED:
+- Routine screening in low-risk asymptomatic patients
+- Repeat testing within 12 months without clinical change
+- Pre-participation sports screening without symptoms

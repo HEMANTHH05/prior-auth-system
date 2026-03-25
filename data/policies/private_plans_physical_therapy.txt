@@ -1,0 +1,57 @@
+
+POLICY DOCUMENT: Physical Therapy Services
+APPLICABLE PLANS: Aetna, Anthem, Blue Cross Blue Shield,
+                  Cigna Health, Humana, UnitedHealthcare
+PROCEDURE CODES: 97110 (Therapeutic exercises)
+                 97530 (Therapeutic activities)
+                 97140 (Manual therapy)
+                 97012 (Mechanical traction)
+                 97035 (Ultrasound therapy)
+
+COVERAGE CRITERIA:
+Physical therapy is covered when ALL criteria are met:
+
+1. MEDICAL NECESSITY:
+   - Diagnosis requires skilled physical therapy intervention
+   - Treatment goals are measurable and achievable
+   - Patient has rehabilitation potential
+   - Skilled therapist required (not maintenance therapy)
+
+2. PHYSICIAN REFERRAL:
+   - Valid prescription or referral from treating physician
+   - Referral must include diagnosis and treatment goals
+   - Some plans allow direct access for initial evaluation
+
+3. TREATMENT PLAN:
+   - Initial evaluation by licensed physical therapist
+   - Documented plan of care with specific goals
+   - Progress notes at minimum every 10 visits or 30 days
+   - Re-authorization required for continued services
+
+4. AUTHORIZED VISITS:
+   - Initial authorization: 12 visits
+   - Re-authorization available with documented progress
+   - Maximum annual benefit varies by plan (typically 30-60 visits)
+   - Visits must be medically necessary at each visit
+
+DOCUMENTATION REQUIREMENTS:
+1. Initial evaluation with objective measurements
+2. Plan of care with specific measurable goals
+3. Progress notes documenting response to treatment
+4. Functional outcome measures
+5. Discharge summary when care concludes
+
+CONDITIONS COVERED:
+- Post-surgical rehabilitation
+- Musculoskeletal injuries and conditions
+- Neurological rehabilitation
+- Sports injuries
+- Balance and fall prevention
+- Back and neck pain
+- Joint replacement rehabilitation
+
+NOT COVERED:
+- Maintenance therapy without skilled need
+- Fitness or wellness programs
+- Services provided by non-licensed personnel
+- Duplicate services same day

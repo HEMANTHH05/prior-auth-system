@@ -1,0 +1,43 @@
+
+POLICY DOCUMENT: Specialist Referral and Consultation
+APPLICABLE PLANS: Aetna, Anthem, Blue Cross Blue Shield,
+                  Cigna Health, Humana, UnitedHealthcare
+PROCEDURE CODES: 99241-99245 (Office consultation)
+                 99251-99255 (Inpatient consultation)
+
+REFERRAL REQUIREMENTS:
+
+1. PRIMARY CARE REFERRAL:
+   - HMO plans: Referral from primary care physician required
+   - PPO plans: No referral required for in-network specialists
+   - POS plans: Referral required for HMO tier, optional for PPO tier
+
+2. SPECIALIST QUALIFICATIONS:
+   - Must be board certified or eligible in specialty
+   - Must be credentialed with the health plan
+   - In-network specialist preferred
+   - Out-of-network requires prior authorization
+
+3. PRIOR AUTHORIZATION:
+   - Required for certain high-cost specialties:
+     * Neurosurgery
+     * Orthopedic surgery
+     * Oncology
+     * Transplant services
+     * Bariatric surgery consultations
+
+4. MEDICAL NECESSITY:
+   - Primary care physician must document clinical reason
+   - Specialist consultation must be medically indicated
+   - Condition must be beyond scope of primary care
+
+COVERED SERVICES:
+- Initial consultation and evaluation
+- Follow-up specialist visits
+- Specialist-ordered diagnostic tests
+- Specialist-recommended procedures (with separate auth)
+
+AUTHORIZATION PROCESS:
+- Submit referral request with clinical notes
+- Typically decided within 2-3 business days
+- Urgent requests within 24 hours

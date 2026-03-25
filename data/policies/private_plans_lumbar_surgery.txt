@@ -1,0 +1,57 @@
+
+POLICY DOCUMENT: Lumbar Spine Surgery
+APPLICABLE PLANS: Aetna, Anthem, Blue Cross Blue Shield,
+                  Cigna Health, Humana, UnitedHealthcare
+PROCEDURE CODES: 63030 (Laminotomy/discectomy)
+                 63047 (Laminectomy)
+                 22612 (Lumbar fusion)
+                 22630 (Lumbar fusion posterior)
+
+COVERAGE CRITERIA FOR LUMBAR SURGERY:
+
+1. CONSERVATIVE TREATMENT FAILURE:
+   - Minimum 6-12 weeks of conservative treatment
+   - Must include physical therapy and medication management
+   - Epidural steroid injections considered for radiculopathy
+   - Documentation of treatment and outcome required
+
+2. IMAGING REQUIREMENTS:
+   - Recent MRI (within 12 months) confirming surgical pathology
+   - MRI findings must correlate with clinical symptoms
+   - X-rays required for fusion procedures
+   - CT scan may be required for specific indications
+
+3. CLINICAL CRITERIA:
+   For Discectomy/Laminectomy:
+   - Herniated disc or stenosis confirmed on imaging
+   - Radiculopathy with neurological findings
+   - Failed conservative treatment
+   
+   For Spinal Fusion:
+   - Instability documented on imaging
+   - Degenerative disc disease with failed conservative care
+   - Spondylolisthesis with neurological symptoms
+   - Revision surgery criteria
+
+4. SECOND OPINION:
+   - Required for all elective spinal fusion procedures
+   - Second opinion physician must be independent
+   - Second opinion must support surgical recommendation
+
+5. PRE-OPERATIVE REQUIREMENTS:
+   - Medical clearance from primary care physician
+   - Anesthesia pre-operative evaluation
+   - Smoking cessation counseling for fusion candidates
+   - BMI optimization recommendations
+
+DOCUMENTATION REQUIRED:
+1. Complete surgical consultation notes
+2. All imaging studies with radiology reports
+3. Conservative treatment documentation
+4. Second opinion report (for fusion)
+5. Pre-operative history and physical
+
+POST-OPERATIVE AUTHORIZATION:
+- Physical therapy referral post-surgery
+- Follow-up imaging may require separate authorization
+- Pain management referral if needed

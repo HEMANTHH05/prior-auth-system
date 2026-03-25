@@ -1,0 +1,51 @@
+
+POLICY DOCUMENT: Mental Health and Behavioral Health Services
+APPLICABLE PLANS: All Plans including Medicare and Medicaid
+PROCEDURE CODES: 90837 (Individual psychotherapy 60 min)
+                 90834 (Individual psychotherapy 45 min)
+                 90847 (Family therapy with patient)
+                 90853 (Group psychotherapy)
+                 99213 (Office visit with psychiatric evaluation)
+
+COVERAGE REQUIREMENTS:
+
+1. MENTAL HEALTH PARITY:
+   - Mental health benefits equal to medical/surgical benefits
+   - Federal Mental Health Parity and Addiction Equity Act applies
+   - No separate deductible or visit limits beyond medical benefits
+   - Same prior authorization criteria as medical services
+
+2. COVERED DIAGNOSES:
+   - Major Depressive Disorder (F32, F33)
+   - Anxiety Disorders (F40, F41)
+   - Bipolar Disorder (F31)
+   - Post-Traumatic Stress Disorder (F43.1)
+   - Obsessive Compulsive Disorder (F42)
+   - Schizophrenia and Psychotic Disorders (F20)
+   - Substance Use Disorders (F10-F19)
+   - ADHD (F90)
+   - Eating Disorders (F50)
+
+3. PROVIDER QUALIFICATIONS:
+   - Licensed Psychologist (PhD, PsyD)
+   - Licensed Clinical Social Worker (LCSW)
+   - Licensed Professional Counselor (LPC)
+   - Psychiatrist (MD, DO)
+   - Advanced Practice Nurse (psychiatric specialty)
+
+4. AUTHORIZATION REQUIREMENTS:
+   - Initial evaluation typically covered without prior auth
+   - Ongoing therapy may require authorization after initial visits
+   - Inpatient psychiatric requires prior authorization
+   - Partial hospitalization and intensive outpatient require auth
+
+5. DOCUMENTATION:
+   - DSM-5 diagnosis required
+   - Treatment plan with measurable goals
+   - Progress notes at each session
+   - Medication management notes if applicable
+
+CRISIS SERVICES:
+- Emergency mental health services covered without prior auth
+- Crisis stabilization services covered
+- 988 Suicide and Crisis Lifeline available 24/7

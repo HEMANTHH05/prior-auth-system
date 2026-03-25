@@ -1,0 +1,35 @@
+
+POLICY DOCUMENT: Physical Therapy - Medicare Part B
+APPLICABLE PLANS: Medicare, Dual Eligible
+PROCEDURE CODES: 97110, 97530, 97140, 97012, 97035
+
+MEDICARE PHYSICAL THERAPY COVERAGE:
+
+1. COVERAGE REQUIREMENTS:
+   - Services must be medically necessary
+   - Must require skills of licensed therapist
+   - Patient must have rehabilitation potential
+   - Services must be reasonable in amount, frequency, duration
+
+2. THERAPY CAPS AND EXCEPTIONS:
+   - Medicare sets annual therapy cap amounts
+   - Exception process available for medically necessary care
+   - KX modifier required when cap exceeded
+   - Documentation must support medical necessity for exceptions
+
+3. SUPERVISION REQUIREMENTS:
+   - Physical therapist must provide or supervise services
+   - Assistants may provide services under PT supervision
+   - Incident-to billing rules apply in some settings
+
+4. DOCUMENTATION:
+   - Plan of care signed by physician or non-physician practitioner
+   - Therapy notes must document skilled need
+   - Functional outcome reporting required
+   - Progress reports every 10 treatment days
+
+MEDICARE SPECIFIC BILLING:
+- Claims submitted to Medicare Part B
+- 20% coinsurance applies after deductible
+- Secondary insurance may cover remaining cost
+- Medigap policies vary in therapy coverage

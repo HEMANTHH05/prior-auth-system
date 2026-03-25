@@ -1,0 +1,15 @@
+fastapi
+uvicorn
+langgraph
+langchain-core
+langchain-openai
+pydantic
+psycopg2-binary
+sqlalchemy
+azure-search-documents
+azure-ai-formrecognizer
+azure-identity
+pymupdf
+openai
+python-dotenv
+python-multipart

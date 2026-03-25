@@ -1,0 +1,43 @@
+
+POLICY DOCUMENT: Diabetes Management and Supplies
+APPLICABLE PLANS: All Plans
+PROCEDURE CODES: 95250 (Continuous glucose monitoring)
+                 99213 (Diabetes management visit)
+                 G0108 (Diabetes self-management training)
+
+COVERAGE CRITERIA:
+
+1. DIAGNOSIS REQUIREMENTS:
+   - Type 1 Diabetes Mellitus (E10)
+   - Type 2 Diabetes Mellitus (E11)
+   - Gestational Diabetes (O24)
+   - Pre-diabetes for prevention programs (R73.09)
+
+2. DIABETES SUPPLIES COVERAGE:
+   Blood Glucose Monitors:
+   - One monitor per year covered
+   - Test strips: 100/month for insulin users
+   - Test strips: 50/month for non-insulin users
+   
+   Continuous Glucose Monitoring:
+   - Covered for insulin-dependent diabetes
+   - Must have history of hypoglycemia unawareness
+   - Physician must order and document necessity
+   
+   Insulin Pumps:
+   - Covered for Type 1 and insulin-dependent Type 2
+   - Must demonstrate insulin-dependent status
+   - Prior authorization required
+
+3. DIABETES EDUCATION:
+   - Initial diabetes self-management training covered
+   - Annual follow-up education covered
+   - Must be provided by accredited program
+   - Physician referral required
+
+4. PREVENTIVE SERVICES:
+   - Annual diabetes screening for at-risk patients
+   - Hemoglobin A1c testing covered quarterly if not at goal
+   - Annual eye exam covered
+   - Annual foot exam covered
+   - Kidney function testing covered annually

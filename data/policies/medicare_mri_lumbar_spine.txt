@@ -1,0 +1,52 @@
+
+POLICY DOCUMENT: MRI Lumbar Spine - Medicare Coverage
+APPLICABLE PLANS: Medicare, Dual Eligible
+PROCEDURE CODE: 72148, 72149, 72158
+LCD NUMBER: L33762
+ICD-10 CODES: M54.5, M51.1, M47.816, M54.4, M48.06
+
+MEDICARE COVERAGE CRITERIA:
+Medicare covers MRI of the lumbar spine when medically necessary
+and the following criteria are met:
+
+1. INDICATION REQUIREMENTS:
+   - Low back pain with or without radiculopathy persisting 
+     for 6 or more weeks despite conservative therapy
+   - Suspected cord compression or cauda equina syndrome
+   - Progressive neurological deficits
+   - Suspected infection, tumor, or fracture
+   - Pre-operative evaluation for spinal surgery
+
+2. CONSERVATIVE TREATMENT:
+   - Medicare requires documentation of at least 6 weeks of 
+     conservative management
+   - Acceptable conservative treatments: NSAIDs, acetaminophen, 
+     muscle relaxants, physical therapy, chiropractic manipulation
+   - Physician must document treatment response
+
+3. PHYSICIAN DOCUMENTATION:
+   - Order must come from treating physician
+   - Clinical notes must be dated and signed
+   - Notes must document examination findings
+   - Functional limitations must be documented
+
+4. TECHNICAL REQUIREMENTS:
+   - Must be performed on FDA approved equipment
+   - Radiologist interpretation required
+   - Images must be of diagnostic quality
+
+MEDICARE SPECIFIC REQUIREMENTS:
+- Advanced Beneficiary Notice (ABN) required if coverage uncertain
+- Claim must include appropriate diagnosis codes
+- Medical record documentation must support medical necessity
+- Physician signature required on order
+
+NON-COVERED INDICATIONS:
+- Screening without symptoms
+- Repeat imaging without clinical change
+- Patient convenience
+- Research purposes without Medicare approval
+
+APPEAL RIGHTS:
+Medicare beneficiaries have the right to appeal coverage denials.
+Redetermination requests must be filed within 120 days of denial.

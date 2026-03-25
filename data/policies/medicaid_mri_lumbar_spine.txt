@@ -1,0 +1,40 @@
+
+POLICY DOCUMENT: MRI Lumbar Spine - Medicaid Coverage
+APPLICABLE PLANS: Medicaid
+PROCEDURE CODE: 72148, 72149, 72158
+
+MEDICAID COVERAGE CRITERIA:
+Medicaid covers medically necessary MRI of the lumbar spine
+when the following criteria are satisfied:
+
+1. PRIOR AUTHORIZATION REQUIRED:
+   - All MRI studies require prior authorization
+   - Requests must be submitted before service delivery
+   - Retroactive authorization not available except emergencies
+
+2. MEDICAL NECESSITY CRITERIA:
+   - Documented clinical indication for imaging
+   - Conservative treatment trial of minimum 4 weeks
+     (shorter than commercial plans due to Medicaid population)
+   - Physician documentation of treatment failure
+   - Clinical examination findings supporting request
+
+3. PROVIDER REQUIREMENTS:
+   - Ordering provider must be enrolled in Medicaid
+   - Rendering facility must be Medicaid certified
+   - Referral may be required based on managed care plan
+
+4. DOCUMENTATION REQUIREMENTS:
+   - Completed prior authorization request form
+   - Clinical notes from past 90 days
+   - Relevant imaging reports
+   - Treatment history documentation
+
+EXPEDITED REVIEW:
+Available when standard timeline would seriously jeopardize
+beneficiary health. Decision within 72 hours.
+
+DENIAL AND APPEAL:
+Denial notice provided within 2 business days.
+Appeal rights explained in denial notice.
+Fair hearing rights available.
