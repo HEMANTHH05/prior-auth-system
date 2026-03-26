@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prior Auth AI — Nurse Review Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── Reset & Base ─────────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:        #0f2044;
+      --navy-mid:    #162b5a;
+      --navy-light:  #1e3a73;
+      --accent:      #2563eb;
+      --accent-hover:#1d4ed8;
+      --green:       #16a34a;
+      --green-bg:    #dcfce7;
+      --red:         #dc2626;
+      --red-bg:      #fee2e2;
+      --yellow:      #ca8a04;
+      --yellow-bg:   #fef9c3;
+      --gray-50:     #f8fafc;
+      --gray-100:    #f1f5f9;
+      --gray-200:    #e2e8f0;
+      --gray-400:    #94a3b8;
+      --gray-600:    #475569;
+      --gray-800:    #1e293b;
+      --white:       #ffffff;
+      --sidebar-w:   260px;
+      --radius:      8px;
+      --shadow:      0 1px 3px rgba(0,0,0,.12), 0 1px 2px rgba(0,0,0,.08);
+      --shadow-md:   0 4px 6px rgba(0,0,0,.07), 0 2px 4px rgba(0,0,0,.06);
+    }
+
+    html, body {
+      height: 100%;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      color: var(--gray-800);
+      background: var(--gray-50);
+    }
+
+    /* ─── Layout ───────────────────────────────────────────────────────────── */
+    .shell { display: flex; height: 100vh; overflow: hidden; }
+
+    /* ─── Sidebar ──────────────────────────────────────────────────────────── */
+    .sidebar {
+      width: var(--sidebar-w);
+      min-width: var(--sidebar-w);
+      background: var(--navy);
+      display: flex;
+      flex-direction: column;
+      padding: 0;
+      overflow-y: auto;
+    }
+
+    .sidebar-header {
+      padding: 24px 20px 20px;
+      border-bottom: 1px solid var(--navy-light);
+    }
+
+    .sidebar-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-icon {
+      width: 34px;
+      height: 34px;
+      background: var(--accent);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .sidebar-title {
+      color: var(--white);
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+
+    .sidebar-subtitle {
+      color: var(--gray-400);
+      font-size: 11px;
+      margin-top: 1px;
+    }
+
+    .sidebar-nav {
+      padding: 16px 12px;
+      flex: 1;
+    }
+
+    .nav-label {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--gray-400);
+      padding: 0 8px;
+      margin-bottom: 6px;
+      margin-top: 12px;
+    }
+
+    .nav-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      padding: 9px 10px;
+      border: none;
+      background: transparent;
+      color: #94a3b8;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      font-family: inherit;
+      text-align: left;
+      transition: background .15s, color .15s;
+    }
+
+    .nav-btn:hover { background: var(--navy-light); color: var(--white); }
+
+    .nav-btn.active {
+      background: var(--accent);
+      color: var(--white);
+    }
+
+    .nav-icon { font-size: 15px; width: 20px; text-align: center; }
+
+    /* ─── Health indicator ─────────────────────────────────────────────────── */
+    .sidebar-footer {
+      padding: 16px 20px;
+      border-top: 1px solid var(--navy-light);
+    }
+
+    .health-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--gray-400);
+    }
+
+    .health-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--gray-400);
+      flex-shrink: 0;
+      transition: background .3s;
+    }
+
+    .health-dot.online  { background: #4ade80; box-shadow: 0 0 6px #4ade80aa; }
+    .health-dot.offline { background: var(--red); }
+
+    /* ─── Main content ─────────────────────────────────────────────────────── */
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 32px 36px;
+    }
+
+    /* ─── Views ────────────────────────────────────────────────────────────── */
+    .view { display: none; max-width: 780px; }
+    .view.active { display: block; animation: fadeIn .2s ease; }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+    /* ─── Page headers ─────────────────────────────────────────────────────── */
+    .page-header { margin-bottom: 28px; }
+
+    .page-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--gray-800);
+      letter-spacing: -0.4px;
+    }
+
+    .page-desc {
+      margin-top: 4px;
+      color: var(--gray-600);
+      font-size: 13px;
+    }
+
+    /* ─── Card ─────────────────────────────────────────────────────────────── */
+    .card {
+      background: var(--white);
+      border-radius: var(--radius);
+      border: 1px solid var(--gray-200);
+      box-shadow: var(--shadow);
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+
+    .card-title {
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--gray-600);
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--gray-100);
+    }
+
+    /* ─── Form elements ────────────────────────────────────────────────────── */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .form-grid .span-2 { grid-column: span 2; }
+
+    .field { display: flex; flex-direction: column; gap: 5px; }
+
+    label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--gray-600);
+      letter-spacing: 0.2px;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    select,
+    textarea {
+      padding: 9px 12px;
+      border: 1.5px solid var(--gray-200);
+      border-radius: 6px;
+      font-size: 13px;
+      font-family: inherit;
+      color: var(--gray-800);
+      background: var(--white);
+      transition: border-color .15s, box-shadow .15s;
+      outline: none;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37,99,235,.1);
+    }
+
+    textarea { resize: vertical; min-height: 110px; line-height: 1.5; }
+
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px;
+      border: 1.5px solid var(--gray-200);
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .checkbox-row input[type="checkbox"] { width: 15px; height: 15px; accent-color: var(--accent); }
+    .checkbox-row span { font-size: 13px; color: var(--gray-800); }
+    .urgent-badge { font-size: 10px; background: #fef3c7; color: #92400e; padding: 1px 6px; border-radius: 10px; font-weight: 600; }
+
+    /* ─── Buttons ──────────────────────────────────────────────────────────── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background .15s, opacity .15s, transform .1s;
+    }
+
+    .btn:active { transform: scale(.98); }
+    .btn:disabled { opacity: .55; cursor: not-allowed; transform: none; }
+
+    .btn-primary { background: var(--accent); color: var(--white); }
+    .btn-primary:hover:not(:disabled) { background: var(--accent-hover); }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--accent);
+      border: 1.5px solid var(--accent);
+    }
+
+    .btn-outline:hover:not(:disabled) { background: #eff6ff; }
+
+    .btn-approve { background: var(--green); color: var(--white); }
+    .btn-approve:hover:not(:disabled) { background: #15803d; }
+
+    .btn-deny { background: var(--red); color: var(--white); }
+    .btn-deny:hover:not(:disabled) { background: #b91c1c; }
+
+    .btn-sm { padding: 7px 14px; font-size: 12px; }
+
+    /* ─── Spinner ──────────────────────────────────────────────────────────── */
+    .spinner {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255,255,255,.3);
+      border-top-color: var(--white);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+    }
+
+    .spinner-dark {
+      border-color: rgba(37,99,235,.2);
+      border-top-color: var(--accent);
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ─── Alert banners ────────────────────────────────────────────────────── */
+    .alert {
+      padding: 12px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      margin-bottom: 16px;
+      display: none;
+      align-items: flex-start;
+      gap: 10px;
+      line-height: 1.5;
+    }
+
+    .alert.show { display: flex; }
+    .alert-icon { font-size: 15px; margin-top: 1px; flex-shrink: 0; }
+
+    .alert-error   { background: var(--red-bg);    color: #991b1b;  border: 1px solid #fca5a5; }
+    .alert-success { background: var(--green-bg);  color: #14532d;  border: 1px solid #86efac; }
+    .alert-info    { background: #eff6ff;           color: #1e40af;  border: 1px solid #93c5fd; }
+
+    /* ─── Status badges ────────────────────────────────────────────────────── */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .badge-approved    { background: var(--green-bg);  color: var(--green); }
+    .badge-denied      { background: var(--red-bg);    color: var(--red); }
+    .badge-pending     { background: #eff6ff;           color: var(--accent); }
+    .badge-info        { background: var(--yellow-bg); color: var(--yellow); }
+
+    /* ─── Result panels ────────────────────────────────────────────────────── */
+    .result-panel {
+      background: var(--gray-50);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-top: 20px;
+      display: none;
+    }
+
+    .result-panel.show { display: block; animation: fadeIn .2s ease; }
+
+    .result-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .result-field { display: flex; flex-direction: column; gap: 3px; }
+
+    .result-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      color: var(--gray-400);
+    }
+
+    .result-value {
+      font-size: 14px;
+      color: var(--gray-800);
+      font-weight: 500;
+    }
+
+    /* ─── Confidence bar ───────────────────────────────────────────────────── */
+    .confidence-wrap { margin-top: 4px; }
+
+    .confidence-bar-bg {
+      height: 8px;
+      background: var(--gray-200);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 4px;
+    }
+
+    .confidence-bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width .6s ease;
+    }
+
+    .conf-high   { background: var(--green); }
+    .conf-medium { background: #f59e0b; }
+    .conf-low    { background: var(--red); }
+
+    .confidence-pct {
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    /* ─── Criteria lists ───────────────────────────────────────────────────── */
+    .criteria-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+
+    .criteria-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .ci { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+
+    /* ─── Radio decision buttons ───────────────────────────────────────────── */
+    .decision-options {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+
+    .decision-opt {
+      flex: 1;
+      min-width: 130px;
+    }
+
+    .decision-opt input[type="radio"] { display: none; }
+
+    .decision-opt label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 11px 10px;
+      border: 2px solid var(--gray-200);
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      transition: border-color .15s, background .15s;
+      text-transform: none;
+      letter-spacing: 0;
+      color: var(--gray-600);
+    }
+
+    .decision-opt input[value="APPROVED"]:checked + label {
+      border-color: var(--green);
+      background: var(--green-bg);
+      color: var(--green);
+    }
+
+    .decision-opt input[value="DENIED"]:checked + label {
+      border-color: var(--red);
+      background: var(--red-bg);
+      color: var(--red);
+    }
+
+    .decision-opt input[value="REQUEST_MORE_INFO"]:checked + label {
+      border-color: var(--yellow);
+      background: var(--yellow-bg);
+      color: var(--yellow);
+    }
+
+    /* ─── Case ID link ─────────────────────────────────────────────────────── */
+    .case-id-link {
+      font-family: monospace;
+      font-size: 12px;
+      background: var(--gray-100);
+      padding: 2px 7px;
+      border-radius: 4px;
+      color: var(--accent);
+      cursor: pointer;
+      border: none;
+    }
+
+    .case-id-link:hover { text-decoration: underline; }
+
+    /* ─── Section divider ──────────────────────────────────────────────────── */
+    .divider {
+      height: 1px;
+      background: var(--gray-200);
+      margin: 20px 0;
+    }
+
+    /* ─── Loading overlay inside card ─────────────────────────────────────── */
+    .loading-row {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      color: var(--gray-600);
+      font-size: 13px;
+      padding: 12px 0;
+    }
+
+    .loading-row.show { display: flex; }
+
+    /* ─── Responsive ───────────────────────────────────────────────────────── */
+    @media (max-width: 700px) {
+      .form-grid { grid-template-columns: 1fr; }
+      .form-grid .span-2 { grid-column: span 1; }
+      .result-grid { grid-template-columns: 1fr; }
+      .main { padding: 20px 16px; }
+      .sidebar { width: 56px; min-width: 56px; }
+      .sidebar-title, .sidebar-subtitle, .nav-label, .nav-btn span, .health-row span { display: none; }
+      .nav-btn { justify-content: center; padding: 10px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       SIDEBAR
+  ═══════════════════════════════════════════════════════════════════════ -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">
+        <div class="logo-icon">⚕</div>
+        <div>
+          <div class="sidebar-title">Prior Auth AI</div>
+          <div class="sidebar-subtitle">Nurse Review Portal</div>
+        </div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-label">Workflow</div>
+      <button class="nav-btn active" onclick="showView('submit')" id="nav-submit">
+        <span class="nav-icon">📋</span>
+        <span>Submit Request</span>
+      </button>
+      <button class="nav-btn" onclick="showView('status')" id="nav-status">
+        <span class="nav-icon">🔍</span>
+        <span>Check Status</span>
+      </button>
+      <button class="nav-btn" onclick="showView('review')" id="nav-review">
+        <span class="nav-icon">👩‍⚕️</span>
+        <span>Nurse Review</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="health-row">
+        <div class="health-dot" id="health-dot"></div>
+        <span id="health-label">Checking API...</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ═══════════════════════════════════════════════════════════════════════
+       MAIN CONTENT
+  ═══════════════════════════════════════════════════════════════════════ -->
+  <main class="main">
+
+    <!-- ─── VIEW 1: Submit ─────────────────────────────────────────────── -->
+    <section class="view active" id="view-submit">
+      <div class="page-header">
+        <div class="page-title">Submit Prior Authorization</div>
+        <div class="page-desc">Submit a new prior authorization request for AI-assisted clinical review.</div>
+      </div>
+
+      <!-- Demo info banner -->
+      <div style="background:#eff6ff; border:1px solid #93c5fd; border-radius:var(--radius); padding:14px 16px; margin-bottom:16px; font-size:13px; color:#1e40af; line-height:1.6;">
+        <div style="font-weight:600; margin-bottom:6px;">🧪 Demo Mode — Sample Member IDs available for testing:</div>
+        <div style="display:flex; flex-direction:column; gap:3px;">
+          <div>
+            <button type="button" class="case-id-link" onclick="fillMemberId('06e30f00-63d9-7a7d-d30b-79f32641f372')" title="Click to fill Member ID field">06e30f00-63d9-7a7d-d30b-79f32641f372</button>
+            <span style="color:#3b82f6;"> — Joella Schamberger (Anthem)</span>
+          </div>
+          <div>
+            <button type="button" class="case-id-link" onclick="fillMemberId('8c252c04-6279-c924-bda1-70857ed428d4')" title="Click to fill Member ID field">8c252c04-6279-c924-bda1-70857ed428d4</button>
+            <span style="color:#3b82f6;"> — Member 2</span>
+          </div>
+        </div>
+        <div style="margin-top:6px; font-size:11px; color:#60a5fa;">Click any member ID to auto-fill the Member ID field.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Request Details</div>
+
+        <div id="submit-error" class="alert alert-error">
+          <span class="alert-icon">⚠️</span>
+          <span id="submit-error-msg"></span>
+        </div>
+
+        <form id="submit-form" onsubmit="handleSubmit(event)">
+          <div class="form-grid">
+            <div class="field">
+              <label for="member_id">Member ID</label>
+              <input type="text" id="member_id" placeholder="e.g. 06e30f00-63d9-7a7d-d30b-79f32641f372" required />
+            </div>
+            <div class="field">
+              <label for="provider_npi">Provider NPI</label>
+              <input type="text" id="provider_npi" placeholder="1234567890" required />
+            </div>
+            <div class="field">
+              <label for="cpt_code">CPT Code</label>
+              <input type="text" id="cpt_code" placeholder="72148" maxlength="5" required />
+            </div>
+            <div class="field">
+              <label for="icd_code">ICD-10 Code</label>
+              <input type="text" id="icd_code" placeholder="M54.5" required />
+            </div>
+            <div class="field">
+              <label for="case_type">Case Type</label>
+              <select id="case_type">
+                <option value="outpatient">Outpatient</option>
+                <option value="inpatient">Inpatient</option>
+                <option value="medication">Medication</option>
+                <option value="dme">DME (Durable Medical Equipment)</option>
+                <option value="behavioral">Behavioral Health</option>
+              </select>
+            </div>
+            <div class="field" style="justify-content: flex-end;">
+              <label>&nbsp;</label>
+              <label class="checkbox-row">
+                <input type="checkbox" id="is_urgent" />
+                <span>Urgent / Expedited Review</span>
+                <span class="urgent-badge">72hr SLA</span>
+              </label>
+            </div>
+            <div class="field span-2">
+              <label for="clinical_notes">Clinical Notes</label>
+              <textarea id="clinical_notes" placeholder="Provide clinical justification, treatment history, failed conservative therapies, imaging findings, and medical necessity documentation..." required></textarea>
+            </div>
+          </div>
+
+          <div style="margin-top: 20px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+            <button type="submit" class="btn btn-primary" id="submit-btn">
+              <span id="submit-btn-text">Submit for AI Review</span>
+              <span id="submit-spinner" class="spinner" style="display:none;"></span>
+            </button>
+            <button type="button" class="btn btn-outline" onclick="loadSampleData()">🧪 Load Sample Data</button>
+            <div class="loading-row" id="submit-loading">
+              <div class="spinner spinner-dark"></div>
+              <span>Running AI clinical reasoning...</span>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- Result -->
+      <div class="result-panel" id="submit-result">
+        <div class="card-title" style="margin-bottom:14px;">Submission Result</div>
+
+        <div id="submit-success" class="alert alert-success" style="margin-bottom:14px;">
+          <span class="alert-icon">✅</span>
+          <span id="submit-success-msg"></span>
+        </div>
+
+        <div class="result-grid">
+          <div class="result-field">
+            <div class="result-label">Case ID</div>
+            <div class="result-value" id="res-case-id" style="font-family:monospace; font-size:12px;"></div>
+          </div>
+          <div class="result-field">
+            <div class="result-label">Status</div>
+            <div class="result-value" id="res-status"></div>
+          </div>
+          <div class="result-field span-2" style="grid-column:span 2;">
+            <div class="result-label">Message</div>
+            <div class="result-value" id="res-message" style="font-size:13px; color:var(--gray-600);"></div>
+          </div>
+          <div class="result-field span-2" style="grid-column:span 2;">
+            <div class="result-label">Estimated Decision Time</div>
+            <div class="result-value" id="res-eta" style="font-size:13px;"></div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button class="btn btn-outline btn-sm" onclick="goToStatus()">🔍 Check Status</button>
+          <button class="btn btn-outline btn-sm" onclick="goToReview()">👩‍⚕️ Go to Nurse Review</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── VIEW 2: Status ─────────────────────────────────────────────── -->
+    <section class="view" id="view-status">
+      <div class="page-header">
+        <div class="page-title">Check Case Status</div>
+        <div class="page-desc">Look up the current status and AI recommendation for a prior authorization case.</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Case Lookup</div>
+        <div id="status-error" class="alert alert-error">
+          <span class="alert-icon">⚠️</span>
+          <span id="status-error-msg"></span>
+        </div>
+        <div style="display:flex; gap:10px; align-items:flex-end;">
+          <div class="field" style="flex:1;">
+            <label for="status-case-id">Case ID</label>
+            <input type="text" id="status-case-id" placeholder="Enter case UUID" />
+          </div>
+          <button class="btn btn-primary" onclick="handleCheckStatus()" id="status-btn" style="flex-shrink:0; margin-bottom:0;">
+            <span id="status-btn-text">Check Status</span>
+            <span id="status-spinner" class="spinner" style="display:none;"></span>
+          </button>
+        </div>
+      </div>
+
+      <div class="result-panel" id="status-result">
+        <div class="card-title" style="margin-bottom:16px;">Case Details</div>
+
+        <div class="result-grid" style="gap:16px;">
+          <div class="result-field">
+            <div class="result-label">Case ID</div>
+            <div class="result-value" id="st-case-id" style="font-family:monospace; font-size:12px;"></div>
+          </div>
+          <div class="result-field">
+            <div class="result-label">Status</div>
+            <div id="st-status"></div>
+          </div>
+          <div class="result-field">
+            <div class="result-label">Member ID</div>
+            <div class="result-value" id="st-member" style="font-family:monospace; font-size:12px;"></div>
+          </div>
+          <div class="result-field">
+            <div class="result-label">AI Recommendation</div>
+            <div id="st-ai-rec"></div>
+          </div>
+          <div class="result-field" style="grid-column:span 2;">
+            <div class="result-label">Confidence Score</div>
+            <div class="confidence-wrap">
+              <div class="confidence-bar-bg">
+                <div class="confidence-bar-fill" id="st-conf-bar" style="width:0%"></div>
+              </div>
+              <span class="confidence-pct" id="st-conf-pct">—</span>
+            </div>
+          </div>
+          <div class="result-field">
+            <div class="result-label">Requires Human Review</div>
+            <div class="result-value" id="st-human-review"></div>
+          </div>
+          <div class="result-field">
+            <div class="result-label">Submitted At</div>
+            <div class="result-value" id="st-submitted"></div>
+          </div>
+          <div class="result-field" style="grid-column:span 2;" id="st-nurse-row" style="display:none;">
+            <div class="result-label">Nurse Decision</div>
+            <div id="st-nurse-decision"></div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+        <button class="btn btn-outline btn-sm" onclick="goToReview()">👩‍⚕️ Open Nurse Review</button>
+      </div>
+    </section>
+
+    <!-- ─── VIEW 3: Nurse Review ───────────────────────────────────────── -->
+    <section class="view" id="view-review">
+      <div class="page-header">
+        <div class="page-title">Nurse Review</div>
+        <div class="page-desc">Review AI recommendation and record final authorization decision.</div>
+      </div>
+
+      <!-- Load case -->
+      <div class="card">
+        <div class="card-title">Load Case</div>
+        <div id="review-load-error" class="alert alert-error">
+          <span class="alert-icon">⚠️</span>
+          <span id="review-load-error-msg"></span>
+        </div>
+        <div style="display:flex; gap:10px; align-items:flex-end;">
+          <div class="field" style="flex:1;">
+            <label for="review-case-id">Case ID</label>
+            <input type="text" id="review-case-id" placeholder="Enter case UUID" />
+          </div>
+          <button class="btn btn-primary" onclick="handleLoadCase()" id="load-case-btn" style="flex-shrink:0;">
+            <span id="load-case-btn-text">Load Case</span>
+            <span id="load-case-spinner" class="spinner" style="display:none;"></span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Case detail panel -->
+      <div id="review-detail" style="display:none;">
+
+        <!-- AI Summary -->
+        <div class="card">
+          <div class="card-title">AI Clinical Assessment</div>
+
+          <div class="result-grid" style="margin-bottom:16px;">
+            <div class="result-field">
+              <div class="result-label">AI Recommendation</div>
+              <div id="rv-ai-rec" style="margin-top:2px;"></div>
+            </div>
+            <div class="result-field">
+              <div class="result-label">Confidence Score</div>
+              <div class="confidence-wrap">
+                <div class="confidence-bar-bg">
+                  <div class="confidence-bar-fill" id="rv-conf-bar" style="width:0%"></div>
+                </div>
+                <span class="confidence-pct" id="rv-conf-pct">—</span>
+              </div>
+            </div>
+            <div class="result-field" style="grid-column:span 2;">
+              <div class="result-label">Policy Basis</div>
+              <div class="result-value" id="rv-policy" style="font-size:13px; color:var(--gray-600); margin-top:2px;"></div>
+            </div>
+          </div>
+
+          <div class="divider" style="margin:16px 0;"></div>
+
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;" id="rv-criteria-grid">
+            <!-- criteria filled by JS -->
+          </div>
+
+          <div id="rv-missing-section" style="display:none; margin-top:16px;">
+            <div class="result-label" style="margin-bottom:8px;">⚠️ Missing Information</div>
+            <ul class="criteria-list" id="rv-missing-list"></ul>
+          </div>
+        </div>
+
+        <!-- Nurse decision form -->
+        <div class="card">
+          <div class="card-title">Record Decision</div>
+
+          <div id="review-submit-error" class="alert alert-error">
+            <span class="alert-icon">⚠️</span>
+            <span id="review-submit-error-msg"></span>
+          </div>
+
+          <div id="review-submit-success" class="alert alert-success" style="display:none;">
+            <span class="alert-icon">✅</span>
+            <span id="review-submit-success-msg"></span>
+          </div>
+
+          <form id="review-form" onsubmit="handleSubmitReview(event)">
+            <div class="form-grid">
+              <div class="field">
+                <label for="nurse-id">Nurse ID</label>
+                <input type="text" id="nurse-id" placeholder="e.g. RN-78901" required />
+              </div>
+              <div class="field">
+                <label>&nbsp;</label><!-- spacer -->
+              </div>
+              <div class="field span-2">
+                <label>Decision</label>
+                <div class="decision-options">
+                  <div class="decision-opt">
+                    <input type="radio" name="nurse-decision" id="dec-approve" value="APPROVED" onchange="onDecisionChange()" />
+                    <label for="dec-approve">✅ Approve</label>
+                  </div>
+                  <div class="decision-opt">
+                    <input type="radio" name="nurse-decision" id="dec-deny" value="DENIED" onchange="onDecisionChange()" />
+                    <label for="dec-deny">❌ Deny</label>
+                  </div>
+                  <div class="decision-opt">
+                    <input type="radio" name="nurse-decision" id="dec-more" value="REQUEST_MORE_INFO" onchange="onDecisionChange()" />
+                    <label for="dec-more">📋 Request More Info</label>
+                  </div>
+                </div>
+              </div>
+              <div class="field span-2" id="override-reason-field" style="display:none;">
+                <label for="override-reason">Override Reason <span style="color:var(--red);">*</span></label>
+                <textarea id="override-reason" placeholder="Document clinical or policy rationale for overriding the AI recommendation (required when decision differs from AI)..."></textarea>
+              </div>
+            </div>
+
+            <div style="margin-top:20px; display:flex; gap:10px; align-items:center;">
+              <button type="submit" class="btn btn-primary" id="review-submit-btn">
+                <span id="review-btn-text">Submit Decision</span>
+                <span id="review-spinner" class="spinner" style="display:none;"></span>
+              </button>
+            </div>
+          </form>
+        </div>
+
+      </div><!-- /review-detail -->
+    </section>
+
+  </main>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     JAVASCRIPT
+═══════════════════════════════════════════════════════════════════════ -->
+<script>
+  const API = 'http://localhost:8000';
+
+  // ── Shared state ─────────────────────────────────────────────────────────
+  let lastCaseId   = null;   // set after submit; auto-fills other views
+  let loadedStatus = null;   // cached status for review view
+
+  // ── Sample data helpers ───────────────────────────────────────────────────
+  function fillMemberId(id) {
+    document.getElementById('member_id').value = id;
+    document.getElementById('member_id').focus();
+  }
+
+  function loadSampleData() {
+    document.getElementById('member_id').value    = '06e30f00-63d9-7a7d-d30b-79f32641f372';
+    document.getElementById('cpt_code').value     = '72148';
+    document.getElementById('icd_code').value     = 'M54.5';
+    document.getElementById('provider_npi').value = '1234567890';
+    document.getElementById('case_type').value    = 'outpatient';
+    document.getElementById('is_urgent').checked  = false;
+    document.getElementById('clinical_notes').value =
+      'Patient presents with 6-week history of low back pain radiating to left leg ' +
+      '(L4-L5 distribution). Neurological symptoms include numbness and tingling in ' +
+      'left foot. Conservative treatment with 6 weeks of physical therapy and NSAIDs ' +
+      '(naproxen 500mg BID) has failed to provide adequate relief. Plain X-ray ' +
+      'completed 2 weeks ago showed no fracture. Requesting MRI lumbar spine without ' +
+      'contrast to evaluate for disc herniation or nerve root compression.';
+  }
+
+  // ── Health check ─────────────────────────────────────────────────────────
+  async function checkHealth() {
+    const dot   = document.getElementById('health-dot');
+    const label = document.getElementById('health-label');
+    try {
+      const r = await fetch(`${API}/health`, { signal: AbortSignal.timeout(4000) });
+      if (r.ok) {
+        dot.className   = 'health-dot online';
+        label.textContent = 'API Online';
+      } else {
+        throw new Error('non-ok');
+      }
+    } catch {
+      dot.className   = 'health-dot offline';
+      label.textContent = 'API Offline';
+    }
+  }
+
+  checkHealth();
+  setInterval(checkHealth, 30_000);
+
+  // ── Navigation ────────────────────────────────────────────────────────────
+  function showView(name) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(`view-${name}`).classList.add('active');
+    document.getElementById(`nav-${name}`).classList.add('active');
+
+    // Auto-fill case ID when switching views
+    if (name === 'status'  && lastCaseId) document.getElementById('status-case-id').value = lastCaseId;
+    if (name === 'review'  && lastCaseId) document.getElementById('review-case-id').value = lastCaseId;
+  }
+
+  function goToStatus() {
+    showView('status');
+    if (lastCaseId) handleCheckStatus();
+  }
+
+  function goToReview() {
+    showView('review');
+    if (lastCaseId) {
+      document.getElementById('review-case-id').value = lastCaseId;
+      handleLoadCase();
+    }
+  }
+
+  // ── Utilities ─────────────────────────────────────────────────────────────
+  function statusBadge(status) {
+    const map = {
+      APPROVED:            ['badge-approved', '✓ Approved'],
+      DENIED:              ['badge-denied',   '✗ Denied'],
+      PENDING_NURSE_REVIEW:['badge-pending',  '⏳ Pending Review'],
+      PENDING_AI_REVIEW:   ['badge-pending',  '⏳ AI Processing'],
+      PENDING_MORE_INFO:   ['badge-info',     '📋 More Info Needed'],
+      ERROR:               ['badge-denied',   '⚠ Error'],
+    };
+    const [cls, label] = map[status] || ['badge-pending', status];
+    return `<span class="badge ${cls}">${label}</span>`;
+  }
+
+  function aiRecBadge(rec) {
+    if (!rec) return '<span style="color:var(--gray-400)">—</span>';
+    const map = {
+      APPROVE:           ['badge-approved', '✓ Approve'],
+      DENY:              ['badge-denied',   '✗ Deny'],
+      INSUFFICIENT_INFO: ['badge-info',     '📋 Insufficient Info'],
+    };
+    const [cls, label] = map[rec] || ['badge-pending', rec];
+    return `<span class="badge ${cls}">${label}</span>`;
+  }
+
+  function renderConfBar(score, barId, pctId) {
+    if (score == null) return;
+    const pct = Math.round(score * 100);
+    const bar = document.getElementById(barId);
+    const pctEl = document.getElementById(pctId);
+    bar.style.width = pct + '%';
+    bar.className = 'confidence-bar-fill ' + (pct >= 75 ? 'conf-high' : pct >= 50 ? 'conf-medium' : 'conf-low');
+    pctEl.textContent = `${pct}%`;
+    pctEl.style.color = pct >= 75 ? 'var(--green)' : pct >= 50 ? '#f59e0b' : 'var(--red)';
+  }
+
+  function setLoading(btnId, textId, spinnerId, loading, text) {
+    const btn = document.getElementById(btnId);
+    btn.disabled = loading;
+    document.getElementById(textId).textContent = text;
+    document.getElementById(spinnerId).style.display = loading ? 'inline-block' : 'none';
+  }
+
+  function showAlert(id, msgId, msg) {
+    document.getElementById(id).classList.add('show');
+    document.getElementById(msgId).textContent = msg;
+  }
+
+  function hideAlert(id) {
+    document.getElementById(id).classList.remove('show');
+  }
+
+  function fmtDate(iso) {
+    if (!iso) return '—';
+    try { return new Date(iso).toLocaleString(); } catch { return iso; }
+  }
+
+  // ── VIEW 1: Submit ────────────────────────────────────────────────────────
+  async function handleSubmit(e) {
+    e.preventDefault();
+    hideAlert('submit-error');
+    document.getElementById('submit-result').classList.remove('show');
+
+    const payload = {
+      member_id:      document.getElementById('member_id').value.trim(),
+      cpt_code:       document.getElementById('cpt_code').value.trim(),
+      icd_code:       document.getElementById('icd_code').value.trim().toUpperCase(),
+      provider_npi:   document.getElementById('provider_npi').value.trim(),
+      clinical_notes: document.getElementById('clinical_notes').value.trim(),
+      is_urgent:      document.getElementById('is_urgent').checked,
+      case_type:      document.getElementById('case_type').value,
+      attachments:    [],
+    };
+
+    setLoading('submit-btn', 'submit-btn-text', 'submit-spinner', true, 'Submitting...');
+    document.getElementById('submit-loading').classList.add('show');
+
+    try {
+      const r = await fetch(`${API}/prior-auth/submit`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await r.json();
+
+      if (!r.ok) {
+        showAlert('submit-error', 'submit-error-msg', data.detail || 'Submission failed. Please try again.');
+        return;
+      }
+
+      lastCaseId = data.case_id;
+
+      document.getElementById('res-case-id').textContent  = data.case_id;
+      document.getElementById('res-status').innerHTML     = statusBadge(data.status);
+      document.getElementById('res-message').textContent  = data.message || '';
+      document.getElementById('res-eta').textContent      = data.estimated_decision_time || '';
+
+      const isApproved = data.status === 'APPROVED';
+      const isPending  = data.status === 'PENDING_NURSE_REVIEW';
+
+      document.getElementById('submit-success-msg').textContent =
+        isApproved ? `Case auto-approved with high confidence. Case ID: ${data.case_id}` :
+        isPending  ? `Case submitted and queued for nurse review. Case ID: ${data.case_id}` :
+                     `Case submitted. Case ID: ${data.case_id}`;
+
+      document.getElementById('submit-result').classList.add('show');
+
+    } catch (err) {
+      showAlert('submit-error', 'submit-error-msg', 'Network error — is the API server running?');
+    } finally {
+      setLoading('submit-btn', 'submit-btn-text', 'submit-spinner', false, 'Submit for AI Review');
+      document.getElementById('submit-loading').classList.remove('show');
+    }
+  }
+
+  // ── VIEW 2: Status ────────────────────────────────────────────────────────
+  async function handleCheckStatus() {
+    hideAlert('status-error');
+    document.getElementById('status-result').classList.remove('show');
+
+    const caseId = document.getElementById('status-case-id').value.trim();
+    if (!caseId) { showAlert('status-error', 'status-error-msg', 'Please enter a Case ID.'); return; }
+
+    setLoading('status-btn', 'status-btn-text', 'status-spinner', true, 'Checking...');
+
+    try {
+      const r    = await fetch(`${API}/prior-auth/${encodeURIComponent(caseId)}/status`);
+      const data = await r.json();
+
+      if (!r.ok) {
+        showAlert('status-error', 'status-error-msg', data.detail || 'Case not found.');
+        return;
+      }
+
+      document.getElementById('st-case-id').textContent = data.case_id;
+      document.getElementById('st-status').innerHTML    = statusBadge(data.status);
+      document.getElementById('st-member').textContent  = data.member_id || '—';
+      document.getElementById('st-ai-rec').innerHTML    = aiRecBadge(data.ai_recommendation);
+      document.getElementById('st-human-review').textContent = data.requires_human_review ? '⚠️ Yes' : '✓ No';
+      document.getElementById('st-submitted').textContent    = fmtDate(data.submitted_at);
+
+      renderConfBar(data.confidence_score, 'st-conf-bar', 'st-conf-pct');
+
+      const nurseRow = document.getElementById('st-nurse-row');
+      if (data.nurse_decision) {
+        nurseRow.style.display = '';
+        document.getElementById('st-nurse-decision').innerHTML =
+          `${aiRecBadge(data.nurse_decision.decision)} &nbsp; <span style="color:var(--gray-600); font-size:12px;">by ${data.nurse_decision.nurse_id}</span>`;
+      } else {
+        nurseRow.style.display = 'none';
+      }
+
+      document.getElementById('status-result').classList.add('show');
+
+    } catch (err) {
+      showAlert('status-error', 'status-error-msg', 'Network error — is the API server running?');
+    } finally {
+      setLoading('status-btn', 'status-btn-text', 'status-spinner', false, 'Check Status');
+    }
+  }
+
+  // ── VIEW 3: Nurse Review — load case ─────────────────────────────────────
+  async function handleLoadCase() {
+    hideAlert('review-load-error');
+    document.getElementById('review-detail').style.display = 'none';
+
+    const caseId = document.getElementById('review-case-id').value.trim();
+    if (!caseId) { showAlert('review-load-error', 'review-load-error-msg', 'Please enter a Case ID.'); return; }
+
+    setLoading('load-case-btn', 'load-case-btn-text', 'load-case-spinner', true, 'Loading...');
+
+    try {
+      const r    = await fetch(`${API}/prior-auth/${encodeURIComponent(caseId)}/status`);
+      const data = await r.json();
+
+      if (!r.ok) {
+        showAlert('review-load-error', 'review-load-error-msg', data.detail || 'Case not found.');
+        return;
+      }
+
+      loadedStatus = data;
+      renderReviewPanel(data);
+      document.getElementById('review-detail').style.display = 'block';
+
+    } catch (err) {
+      showAlert('review-load-error', 'review-load-error-msg', 'Network error — is the API server running?');
+    } finally {
+      setLoading('load-case-btn', 'load-case-btn-text', 'load-case-spinner', false, 'Load Case');
+    }
+  }
+
+  function renderReviewPanel(data) {
+    // AI recommendation + confidence
+    document.getElementById('rv-ai-rec').innerHTML = aiRecBadge(data.ai_recommendation);
+    renderConfBar(data.confidence_score, 'rv-conf-bar', 'rv-conf-pct');
+
+    // policy basis — from checkpoint state if present
+    const policy = data.policy_basis || '(not available — case may still be processing)';
+    document.getElementById('rv-policy').textContent = policy;
+
+    // Criteria met / not met
+    const grid = document.getElementById('rv-criteria-grid');
+    const metList   = Array.isArray(data.criteria_met)     ? data.criteria_met     : [];
+    const notList   = Array.isArray(data.criteria_not_met) ? data.criteria_not_met : [];
+
+    let gridHTML = '';
+
+    if (metList.length > 0) {
+      gridHTML += `
+        <div>
+          <div class="result-label" style="margin-bottom:8px; color:var(--green);">✓ Criteria Met (${metList.length})</div>
+          <ul class="criteria-list">
+            ${metList.map(c => `<li><span class="ci">✅</span><span>${c}</span></li>`).join('')}
+          </ul>
+        </div>`;
+    }
+
+    if (notList.length > 0) {
+      gridHTML += `
+        <div>
+          <div class="result-label" style="margin-bottom:8px; color:var(--red);">✗ Criteria Not Met (${notList.length})</div>
+          <ul class="criteria-list">
+            ${notList.map(c => `<li><span class="ci">❌</span><span>${c}</span></li>`).join('')}
+          </ul>
+        </div>`;
+    }
+
+    if (!gridHTML) {
+      gridHTML = `<div style="color:var(--gray-400); font-size:13px; grid-column:span 2;">No criteria detail available. Case may be pending AI processing.</div>`;
+    }
+
+    grid.innerHTML = gridHTML;
+
+    // Missing information
+    const missing = Array.isArray(data.missing_information) ? data.missing_information : [];
+    const missingSection = document.getElementById('rv-missing-section');
+    if (missing.length > 0) {
+      missingSection.style.display = '';
+      document.getElementById('rv-missing-list').innerHTML =
+        missing.map(m => `<li><span class="ci">⚠️</span><span>${m}</span></li>`).join('');
+    } else {
+      missingSection.style.display = 'none';
+    }
+
+    // Pre-select decision matching AI recommendation
+    const aiRec = data.ai_recommendation;
+    if (aiRec === 'APPROVE')      document.getElementById('dec-approve').checked = true;
+    else if (aiRec === 'DENY')    document.getElementById('dec-deny').checked    = true;
+
+    onDecisionChange();
+  }
+
+  // Show/hide override reason based on whether decision matches AI rec
+  function onDecisionChange() {
+    const selected = document.querySelector('input[name="nurse-decision"]:checked');
+    if (!selected) return;
+
+    const aiRec  = loadedStatus?.ai_recommendation;
+    const mapAI  = { 'APPROVE': 'APPROVED', 'DENY': 'DENIED', 'INSUFFICIENT_INFO': 'REQUEST_MORE_INFO' };
+    const aiMapped = mapAI[aiRec] || null;
+
+    // Show override reason if nurse decision differs from AI OR on DENY
+    const showOverride = !aiMapped || selected.value !== aiMapped || selected.value === 'DENIED';
+    document.getElementById('override-reason-field').style.display = showOverride ? '' : 'none';
+
+    const overrideTA = document.getElementById('override-reason');
+    overrideTA.required = showOverride;
+  }
+
+  // ── VIEW 3: Submit review ─────────────────────────────────────────────────
+  async function handleSubmitReview(e) {
+    e.preventDefault();
+    hideAlert('review-submit-error');
+    document.getElementById('review-submit-success').style.display = 'none';
+
+    const caseId   = document.getElementById('review-case-id').value.trim();
+    const nurseId  = document.getElementById('nurse-id').value.trim();
+    const decision = document.querySelector('input[name="nurse-decision"]:checked')?.value;
+    const override = document.getElementById('override-reason').value.trim();
+
+    if (!decision) {
+      showAlert('review-submit-error', 'review-submit-error-msg', 'Please select a decision.');
+      return;
+    }
+
+    const payload = {
+      decision:        decision,
+      nurse_id:        nurseId,
+      override_reason: override || null,
+    };
+
+    setLoading('review-submit-btn', 'review-btn-text', 'review-spinner', true, 'Submitting...');
+
+    try {
+      const r    = await fetch(`${API}/prior-auth/${encodeURIComponent(caseId)}/review`, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify(payload),
+      });
+
+      const data = await r.json();
+
+      if (!r.ok) {
+        showAlert('review-submit-error', 'review-submit-error-msg', data.detail || 'Review submission failed.');
+        return;
+      }
+
+      const decisionLabel = { APPROVED: 'Approved', DENIED: 'Denied', REQUEST_MORE_INFO: 'More Info Requested' }[decision] || decision;
+      document.getElementById('review-submit-success-msg').textContent =
+        `Decision recorded: ${decisionLabel}. Case ${caseId} updated successfully.`;
+      document.getElementById('review-submit-success').style.display = 'flex';
+
+      // Reload panel with updated status
+      loadedStatus = data;
+      renderReviewPanel(data);
+
+    } catch (err) {
+      showAlert('review-submit-error', 'review-submit-error-msg', 'Network error — is the API server running?');
+    } finally {
+      setLoading('review-submit-btn', 'review-btn-text', 'review-spinner', false, 'Submit Decision');
+    }
+  }
+</script>
+</body>
+</html>

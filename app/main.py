@@ -36,6 +36,8 @@ import psycopg2.extras
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 
 from app.graph.graph import graph_app
 from app.models.schemas import (
@@ -75,6 +77,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.mount("/static", StaticFiles(directory="frontend"), name="static")
+
 
 # ---------------------------------------------------------------------------
 # Database helpers — same psycopg2 pattern as member_service.py
@@ -287,6 +292,11 @@ async def root():
         "version": "1.0.0",
         "docs": "/docs",
     }
+
+
+@app.get("/nurse-portal")
+async def nurse_portal():
+    return FileResponse("frontend/index.html")
 
 
 @app.get("/health")
