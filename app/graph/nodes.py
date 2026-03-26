@@ -605,7 +605,16 @@ POLICY DOCUMENTS:
             validated.decision,
             confidence,
         )
-        return {"reasoning_output": reasoning_dict, "confidence_score": confidence}
+        # Convert Pydantic enum values to plain strings
+        # for clean LangGraph checkpoint serialization
+        # Prevents "unregistered type" warnings
+        if isinstance(reasoning_dict.get("decision"), AIDecision):
+            reasoning_dict["decision"] = reasoning_dict["decision"].value
+
+        return {
+            "reasoning_output": reasoning_dict,
+            "confidence_score": float(confidence)
+        }
 
     except (json.JSONDecodeError, ValidationError) as exc:
         logger.error("[node5] LLM output validation failed: %s\nRaw: %s", exc, raw_json[:500])
