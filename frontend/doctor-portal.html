@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prior Authorization Request Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:        #0f2044;
+      --navy-mid:    #162b5a;
+      --accent:      #2563eb;
+      --accent-hover:#1d4ed8;
+      --green:       #16a34a;
+      --green-bg:    #dcfce7;
+      --red:         #dc2626;
+      --red-bg:      #fee2e2;
+      --gray-50:     #f8fafc;
+      --gray-100:    #f1f5f9;
+      --gray-200:    #e2e8f0;
+      --gray-400:    #94a3b8;
+      --gray-600:    #475569;
+      --gray-800:    #1e293b;
+      --white:       #ffffff;
+      --radius:      8px;
+      --shadow:      0 1px 3px rgba(0,0,0,.12), 0 1px 2px rgba(0,0,0,.08);
+      --shadow-md:   0 4px 12px rgba(0,0,0,.08), 0 2px 4px rgba(0,0,0,.05);
+    }
+
+    html, body {
+      min-height: 100%;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      color: var(--gray-800);
+      background: var(--gray-50);
+    }
+
+    /* ── Header ─────────────────────────────────────────────────────────── */
+    .header {
+      background: var(--navy);
+      padding: 0 32px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 8px rgba(0,0,0,.2);
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .header-icon {
+      width: 38px;
+      height: 38px;
+      background: var(--accent);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .header-title {
+      color: var(--white);
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+
+    .header-subtitle {
+      color: #94a3b8;
+      font-size: 12px;
+      margin-top: 1px;
+    }
+
+    .header-badge {
+      background: rgba(255,255,255,.1);
+      color: #94a3b8;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 5px 12px;
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,.12);
+      letter-spacing: 0.3px;
+    }
+
+    /* ── Page body ───────────────────────────────────────────────────────── */
+    .page {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 32px 20px 48px;
+    }
+
+    /* ── Info banner ─────────────────────────────────────────────────────── */
+    .info-banner {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: var(--radius);
+      padding: 13px 16px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 13px;
+      color: #1e40af;
+      line-height: 1.5;
+    }
+
+    .info-banner-icon { font-size: 15px; flex-shrink: 0; margin-top: 1px; }
+
+    /* ── Card ────────────────────────────────────────────────────────────── */
+    .card {
+      background: var(--white);
+      border-radius: var(--radius);
+      border: 1px solid var(--gray-200);
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
+    }
+
+    .card-header {
+      padding: 22px 28px 18px;
+      border-bottom: 1px solid var(--gray-100);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--gray-800);
+      letter-spacing: -0.2px;
+    }
+
+    .card-desc {
+      font-size: 12px;
+      color: var(--gray-600);
+      margin-top: 2px;
+    }
+
+    .card-body { padding: 24px 28px 28px; }
+
+    /* ── Form ────────────────────────────────────────────────────────────── */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .span-2 { grid-column: span 2; }
+
+    .field { display: flex; flex-direction: column; gap: 5px; }
+
+    label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--gray-600);
+      letter-spacing: 0.2px;
+    }
+
+    input[type="text"],
+    select,
+    textarea {
+      padding: 9px 12px;
+      border: 1.5px solid var(--gray-200);
+      border-radius: 6px;
+      font-size: 13px;
+      font-family: inherit;
+      color: var(--gray-800);
+      background: var(--white);
+      transition: border-color .15s, box-shadow .15s;
+      outline: none;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37,99,235,.1);
+    }
+
+    input::placeholder, textarea::placeholder { color: var(--gray-400); }
+
+    textarea {
+      resize: vertical;
+      min-height: 130px;
+      line-height: 1.55;
+    }
+
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 12px;
+      border: 1.5px solid var(--gray-200);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: border-color .15s;
+      user-select: none;
+    }
+
+    .checkbox-row:hover { border-color: var(--accent); }
+    .checkbox-row input[type="checkbox"] { width: 15px; height: 15px; accent-color: var(--accent); cursor: pointer; }
+    .checkbox-row span { font-size: 13px; color: var(--gray-800); }
+
+    .urgent-badge {
+      font-size: 10px;
+      background: #fef3c7;
+      color: #92400e;
+      padding: 2px 7px;
+      border-radius: 10px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+    }
+
+    /* ── Buttons ─────────────────────────────────────────────────────────── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background .15s, opacity .15s, transform .1s;
+    }
+
+    .btn:active { transform: scale(.98); }
+    .btn:disabled { opacity: .55; cursor: not-allowed; transform: none; }
+
+    .btn-primary {
+      background: var(--accent);
+      color: var(--white);
+      padding: 11px 28px;
+      font-size: 14px;
+    }
+
+    .btn-primary:hover:not(:disabled) { background: var(--accent-hover); }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--accent);
+      border: 1.5px solid var(--accent);
+      padding: 7px 14px;
+      font-size: 12px;
+    }
+
+    .btn-outline:hover:not(:disabled) { background: #eff6ff; }
+
+    /* ── Spinner ─────────────────────────────────────────────────────────── */
+    .spinner {
+      display: inline-block;
+      width: 15px;
+      height: 15px;
+      border: 2px solid rgba(255,255,255,.3);
+      border-top-color: var(--white);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Alerts ──────────────────────────────────────────────────────────── */
+    .alert {
+      padding: 12px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      margin-bottom: 18px;
+      display: none;
+      align-items: flex-start;
+      gap: 10px;
+      line-height: 1.5;
+    }
+
+    .alert.show { display: flex; }
+    .alert-icon { font-size: 15px; flex-shrink: 0; margin-top: 1px; }
+    .alert-error { background: var(--red-bg); color: #991b1b; border: 1px solid #fca5a5; }
+
+    /* ── Success card ────────────────────────────────────────────────────── */
+    .success-card {
+      display: none;
+      background: var(--white);
+      border-radius: var(--radius);
+      border: 1px solid #86efac;
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
+      margin-top: 20px;
+    }
+
+    .success-card.show { display: block; animation: fadeIn .25s ease; }
+
+    .success-header {
+      background: var(--green-bg);
+      padding: 18px 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid #86efac;
+    }
+
+    .success-check {
+      width: 36px;
+      height: 36px;
+      background: var(--green);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .success-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #14532d;
+    }
+
+    .success-subtitle {
+      font-size: 12px;
+      color: #166534;
+      margin-top: 1px;
+    }
+
+    .success-body { padding: 20px 24px 24px; }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .detail-field { display: flex; flex-direction: column; gap: 3px; }
+
+    .detail-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--gray-400);
+    }
+
+    .detail-value {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--gray-800);
+    }
+
+    .case-id-box {
+      background: var(--gray-50);
+      border: 1px solid var(--gray-200);
+      border-radius: 6px;
+      padding: 10px 14px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      color: var(--accent);
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      word-break: break-all;
+      margin-bottom: 16px;
+    }
+
+    .case-id-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--gray-400);
+      margin-bottom: 5px;
+    }
+
+    .queue-notice {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 6px;
+      padding: 12px 14px;
+      font-size: 12px;
+      color: #166534;
+      line-height: 1.55;
+      margin-bottom: 16px;
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+    }
+
+    .queue-notice-icon { flex-shrink: 0; }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: #eff6ff;
+      color: var(--accent);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+
+    /* ── Footer link ─────────────────────────────────────────────────────── */
+    .footer {
+      text-align: center;
+      margin-top: 28px;
+      font-size: 12px;
+      color: var(--gray-400);
+    }
+
+    .footer a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .footer a:hover { text-decoration: underline; }
+
+    .divider {
+      height: 1px;
+      background: var(--gray-100);
+      margin: 16px 0;
+    }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+    /* ── Responsive ──────────────────────────────────────────────────────── */
+    @media (max-width: 600px) {
+      .header { padding: 0 16px; }
+      .header-badge { display: none; }
+      .page { padding: 20px 12px 40px; }
+      .card-body, .card-header { padding: 18px 18px; }
+      .form-grid { grid-template-columns: 1fr; }
+      .span-2 { grid-column: span 1; }
+      .detail-grid { grid-template-columns: 1fr; }
+      .success-body { padding: 16px 18px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     HEADER
+═══════════════════════════════════════════════════════════════════════ -->
+<header class="header">
+  <div class="header-left">
+    <div class="header-icon">⚕</div>
+    <div>
+      <div class="header-title">Prior Authorization Request Portal</div>
+      <div class="header-subtitle">Submit requests for insurance review</div>
+    </div>
+  </div>
+  <div class="header-badge">Provider Portal</div>
+</header>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     PAGE BODY
+═══════════════════════════════════════════════════════════════════════ -->
+<div class="page">
+
+  <!-- Info banner -->
+  <div class="info-banner">
+    <span class="info-banner-icon">ℹ️</span>
+    <span>This portal is for authorized healthcare providers only. Submitted requests are reviewed by licensed clinical nurses before an authorization decision is issued.</span>
+  </div>
+
+  <!-- Form card -->
+  <div class="card" id="form-card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">New Prior Authorization Request</div>
+        <div class="card-desc">All fields are required. Provide complete clinical documentation to support medical necessity.</div>
+      </div>
+    </div>
+
+    <div class="card-body">
+      <div id="error-banner" class="alert alert-error">
+        <span class="alert-icon">⚠️</span>
+        <span id="error-msg"></span>
+      </div>
+
+      <form id="submit-form" onsubmit="handleSubmit(event)">
+        <div class="form-grid">
+
+          <div class="field span-2">
+            <label for="member_id">Member ID</label>
+            <div style="display:flex;gap:8px">
+              <input type="text" id="member_id" placeholder="e.g. UUID" required style="flex:1" />
+              <button type="button" onclick="loadRandomMember()" id="random-btn"
+                style="padding:9px 14px;background:#f1f5f9;border:1.5px solid #e2e8f0;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;color:#475569;font-family:inherit">
+                🎲 Random Patient
+              </button>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="cpt_code">CPT Code</label>
+            <input type="text" id="cpt_code" placeholder="72148" maxlength="5" required />
+          </div>
+
+          <div class="field">
+            <label for="icd_code">ICD-10 Code</label>
+            <input type="text" id="icd_code" placeholder="M54.5" required />
+          </div>
+
+          <div class="field">
+            <label for="provider_npi">Provider NPI</label>
+            <input type="text" id="provider_npi" placeholder="1234567890" maxlength="10" required />
+          </div>
+
+          <div class="field">
+            <label for="case_type">Case Type</label>
+            <select id="case_type">
+              <option value="outpatient">Outpatient</option>
+              <option value="inpatient">Inpatient</option>
+              <option value="medication">Medication</option>
+              <option value="dme">DME (Durable Medical Equipment)</option>
+              <option value="behavioral">Behavioral Health</option>
+            </select>
+          </div>
+
+          <div class="field span-2">
+            <label>&nbsp;</label>
+            <label class="checkbox-row" for="is_urgent">
+              <input type="checkbox" id="is_urgent" />
+              <span>Urgent / Expedited Review Required</span>
+              <span class="urgent-badge">72hr SLA</span>
+            </label>
+          </div>
+
+          <div class="field span-2">
+            <label for="clinical_notes">Clinical Notes &amp; Medical Necessity Documentation</label>
+            <textarea id="clinical_notes" placeholder="Include: diagnosis details, conservative treatments tried, duration of symptoms, imaging completed, failed therapies, and medical necessity justification..." required></textarea>
+          </div>
+
+        </div>
+
+        <div style="margin-top: 24px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+          <button type="submit" class="btn btn-primary" id="submit-btn">
+            <span id="btn-text">Submit Prior Auth Request</span>
+            <span id="btn-spinner" class="spinner" style="display:none;"></span>
+          </button>
+          <span style="font-size:12px; color:var(--gray-400);">Your submission is sent directly to the clinical review queue.</span>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Success card (shown after submit) -->
+  <div class="success-card" id="success-card">
+    <div class="success-header">
+      <div class="success-check">✓</div>
+      <div>
+        <div class="success-title">Request Submitted Successfully</div>
+        <div class="success-subtitle">Your prior authorization request is now in the review queue.</div>
+      </div>
+    </div>
+    <div class="success-body">
+
+      <div class="case-id-label">Case ID</div>
+      <div class="case-id-box" id="res-case-id"></div>
+
+      <div class="detail-grid">
+        <div class="detail-field">
+          <div class="detail-label">Status</div>
+          <div class="detail-value"><span class="status-badge">⏳ Pending Nurse Review</span></div>
+        </div>
+        <div class="detail-field">
+          <div class="detail-label">Estimated Decision Time</div>
+          <div class="detail-value" id="res-eta"></div>
+        </div>
+        <div class="detail-field" style="grid-column: span 2;">
+          <div class="detail-label">Message</div>
+          <div class="detail-value" id="res-message" style="color:var(--gray-600);"></div>
+        </div>
+      </div>
+
+      <div class="queue-notice">
+        <span class="queue-notice-icon">📋</span>
+        <span>Your request has been sent to the insurance review queue. A licensed clinical nurse will analyze the documentation and AI-assisted recommendations before issuing a final authorization decision.</span>
+      </div>
+
+      <div class="divider"></div>
+
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <button type="button" class="btn btn-outline" onclick="resetForm()">Submit Another Request</button>
+        <a href="/nurse-portal" style="text-decoration:none;">
+          <button type="button" class="btn btn-outline">Insurance Nurse Portal →</button>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <a href="/nurse-portal">Insurance Nurse Portal →</a>
+    &nbsp;&nbsp;·&nbsp;&nbsp;
+    <a href="/docs">API Documentation</a>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     JAVASCRIPT
+═══════════════════════════════════════════════════════════════════════ -->
+<script>
+  const API = 'http://localhost:8000';
+
+  let sampleMembers = [];
+  let sampleIndex = 0;
+
+  async function loadRandomMember() {
+    const btn = document.getElementById('random-btn');
+
+    const scenarios = [
+      {
+        cpt_code: "72148", icd_code: "M54.5", case_type: "outpatient", is_urgent: false,
+        clinical_notes: "Patient presents with 6-week history of low back pain radiating to left leg. Conservative treatment with physical therapy and NSAIDs has failed. X-ray shows no fracture. Requesting MRI lumbar spine without contrast to evaluate for disc herniation or nerve root compression."
+      },
+      {
+        cpt_code: "97110", icd_code: "M25.561", case_type: "outpatient", is_urgent: false,
+        clinical_notes: "Patient presents with right knee pain following sports injury 3 weeks ago. MRI confirmed partial ACL tear. Completed initial rest protocol. Requesting 12 sessions of physical therapy for strength training and range of motion to avoid surgical intervention."
+      },
+      {
+        cpt_code: "73721", icd_code: "M17.11", case_type: "outpatient", is_urgent: false,
+        clinical_notes: "Patient presents with progressive knee pain over 18 months. X-ray shows Kellgren-Lawrence grade 3 osteoarthritis. Trialed NSAIDs and cortisone injection with temporary relief only. Requesting MRI knee without contrast to evaluate cartilage integrity prior to orthopedic consultation."
+      },
+      {
+        cpt_code: "93015", icd_code: "I25.10", case_type: "outpatient", is_urgent: false,
+        clinical_notes: "Patient presents with exertional chest tightness and shortness of breath for 2 months. Family history of coronary artery disease. EKG shows non-specific ST changes. Requesting stress echocardiogram to evaluate for exercise-induced ischemia."
+      },
+      {
+        cpt_code: "90837", icd_code: "F32.1", case_type: "behavioral", is_urgent: false,
+        clinical_notes: "Patient presents with moderate major depressive disorder (PHQ-9 score 14). Failed SSRI trial (sertraline 50mg x 8 weeks) with inadequate response. Requesting 16 sessions of individual psychotherapy (CBT) to address depressive symptoms and improve daily functioning."
+      },
+      {
+        cpt_code: "72141", icd_code: "M54.2", case_type: "outpatient", is_urgent: false,
+        clinical_notes: "Patient presents with neck pain and bilateral arm numbness for 8 weeks following whiplash injury. Physical therapy and NSAIDs (6 weeks) have not resolved symptoms. Neurological exam shows diminished reflexes in bilateral upper extremities. Requesting MRI cervical spine without contrast."
+      },
+      {
+        cpt_code: "70553", icd_code: "G43.909", case_type: "outpatient", is_urgent: false,
+        clinical_notes: "Patient presents with new onset severe headaches for 3 weeks. CT head was negative. Neurological exam normal. Requesting MRI brain with and without contrast to evaluate for vascular abnormality or intracranial pathology."
+      },
+      {
+        cpt_code: "93000", icd_code: "I48.0", case_type: "outpatient", is_urgent: true,
+        clinical_notes: "URGENT: Patient presents with palpitations and irregular heartbeat for 48 hours. Pulse irregularly irregular. Patient on warfarin for prior DVT. CHADS2-VASc score of 4. Requesting urgent ECG and cardiology consultation for evaluation of new onset atrial fibrillation and anticoagulation review."
+      },
+      {
+        cpt_code: "99243", icd_code: "G43.909", case_type: "outpatient", is_urgent: false,
+        clinical_notes: "Patient presents with chronic migraines 8-12 days per month for 6 months. Tried sumatriptan with partial relief only. Neurological exam normal. Requesting neurology consultation for preventive migraine therapy evaluation. Headaches significantly impacting work and quality of life."
+      },
+      {
+        cpt_code: "97110", icd_code: "M75.11", case_type: "outpatient", is_urgent: false,
+        clinical_notes: "Patient presents with right shoulder rotator cuff tear confirmed on MRI (partial thickness supraspinatus tear). Orthopedic surgeon recommends conservative management. Requesting 8 sessions of physical therapy for rotator cuff strengthening and scapular stabilization."
+      }
+    ];
+
+    if (sampleMembers.length === 0) {
+      btn.textContent = '⏳ Loading...';
+      btn.disabled = true;
+      try {
+        const r = await fetch('http://localhost:8000/members/samples');
+        const data = await r.json();
+        sampleMembers = data.members || [];
+      } catch (e) {
+        btn.textContent = '🎲 Random Patient';
+        btn.disabled = false;
+        return;
+      }
+    }
+
+    if (sampleMembers.length === 0) return;
+
+    const m = sampleMembers[sampleIndex % sampleMembers.length];
+    const scenario = scenarios[sampleIndex % scenarios.length];
+    sampleIndex++;
+
+    document.getElementById('member_id').value      = m.member_id;
+    document.getElementById('cpt_code').value        = scenario.cpt_code;
+    document.getElementById('icd_code').value        = scenario.icd_code;
+    document.getElementById('case_type').value       = scenario.case_type;
+    document.getElementById('is_urgent').checked     = scenario.is_urgent;
+    document.getElementById('clinical_notes').value  = scenario.clinical_notes;
+    document.getElementById('provider_npi').value     = '1234567890';
+
+    let infoEl = document.getElementById('member-info');
+    if (!infoEl) {
+      infoEl = document.createElement('div');
+      infoEl.id = 'member-info';
+      infoEl.style.cssText = 'font-size:12px;color:#2563eb;margin-top:4px;font-weight:500';
+      document.getElementById('member_id').closest('.field').appendChild(infoEl);
+    }
+    infoEl.textContent =
+      m.first_name + ' ' + m.last_name +
+      ' · DOB: ' + m.birthdate +
+      ' · ' + m.city + ', ' + m.state;
+
+    btn.textContent = '🎲 Random Patient';
+    btn.disabled = false;
+  }
+
+  function showError(msg) {
+    const banner = document.getElementById('error-banner');
+    document.getElementById('error-msg').textContent = msg;
+    banner.classList.add('show');
+    banner.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function hideError() {
+    document.getElementById('error-banner').classList.remove('show');
+  }
+
+  function setLoading(loading) {
+    const btn = document.getElementById('submit-btn');
+    btn.disabled = loading;
+    document.getElementById('btn-text').textContent = loading ? 'Submitting...' : 'Submit Prior Auth Request';
+    document.getElementById('btn-spinner').style.display = loading ? 'inline-block' : 'none';
+  }
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    hideError();
+
+    const payload = {
+      member_id:      document.getElementById('member_id').value.trim(),
+      cpt_code:       document.getElementById('cpt_code').value.trim(),
+      icd_code:       document.getElementById('icd_code').value.trim().toUpperCase(),
+      provider_npi:   document.getElementById('provider_npi').value.trim(),
+      case_type:      document.getElementById('case_type').value,
+      is_urgent:      document.getElementById('is_urgent').checked,
+      clinical_notes: document.getElementById('clinical_notes').value.trim(),
+      attachments:    [],
+    };
+
+    setLoading(true);
+
+    try {
+      const r = await fetch(`${API}/prior-auth/submit`, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify(payload),
+      });
+
+      const data = await r.json();
+
+      if (!r.ok) {
+        showError(data.detail || 'Submission failed. Please try again.');
+        return;
+      }
+
+      // Populate success card
+      document.getElementById('res-case-id').textContent  = data.case_id;
+      document.getElementById('res-eta').textContent      = data.estimated_decision_time || '—';
+      document.getElementById('res-message').textContent  = data.message || '';
+
+      // Hide form, show success
+      document.getElementById('form-card').style.display  = 'none';
+      document.getElementById('success-card').classList.add('show');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    } catch {
+      showError('Network error — is the API server running at ' + API + '?');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function resetForm() {
+    document.getElementById('submit-form').reset();
+    document.getElementById('form-card').style.display   = '';
+    document.getElementById('success-card').classList.remove('show');
+    hideError();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+
+</body>
+</html>

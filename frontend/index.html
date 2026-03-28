@@ -4,61 +4,37 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Prior Auth AI — Nurse Review Portal</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
-    /* ─── Reset & Base ─────────────────────────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --navy:        #0f2044;
-      --navy-mid:    #162b5a;
-      --navy-light:  #1e3a73;
-      --accent:      #2563eb;
-      --accent-hover:#1d4ed8;
-      --green:       #16a34a;
-      --green-bg:    #dcfce7;
-      --red:         #dc2626;
-      --red-bg:      #fee2e2;
-      --yellow:      #ca8a04;
-      --yellow-bg:   #fef9c3;
-      --gray-50:     #f8fafc;
-      --gray-100:    #f1f5f9;
-      --gray-200:    #e2e8f0;
-      --gray-400:    #94a3b8;
-      --gray-600:    #475569;
-      --gray-800:    #1e293b;
-      --white:       #ffffff;
-      --sidebar-w:   260px;
-      --radius:      8px;
-      --shadow:      0 1px 3px rgba(0,0,0,.12), 0 1px 2px rgba(0,0,0,.08);
-      --shadow-md:   0 4px 6px rgba(0,0,0,.07), 0 2px 4px rgba(0,0,0,.06);
-    }
 
     html, body {
       height: 100%;
       font-family: 'Inter', sans-serif;
       font-size: 14px;
-      color: var(--gray-800);
-      background: var(--gray-50);
     }
 
-    /* ─── Layout ───────────────────────────────────────────────────────────── */
-    .shell { display: flex; height: 100vh; overflow: hidden; }
+    /* ── Shell ── */
+    .shell {
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
 
-    /* ─── Sidebar ──────────────────────────────────────────────────────────── */
+    /* ── Sidebar ── */
     .sidebar {
-      width: var(--sidebar-w);
-      min-width: var(--sidebar-w);
-      background: var(--navy);
+      width: 260px;
+      min-width: 260px;
+      background: #0f2044;
       display: flex;
       flex-direction: column;
-      padding: 0;
-      overflow-y: auto;
+      overflow: hidden;
     }
 
+    /* Sidebar header */
     .sidebar-header {
-      padding: 24px 20px 20px;
-      border-bottom: 1px solid var(--navy-light);
+      padding: 22px 18px 18px;
+      border-bottom: 1px solid #1e3a73;
     }
 
     .sidebar-logo {
@@ -68,9 +44,9 @@
     }
 
     .logo-icon {
-      width: 34px;
-      height: 34px;
-      background: var(--accent);
+      width: 36px;
+      height: 36px;
+      background: #2563eb;
       border-radius: 8px;
       display: flex;
       align-items: center;
@@ -80,20 +56,20 @@
     }
 
     .sidebar-title {
-      color: var(--white);
-      font-size: 16px;
+      color: #ffffff;
+      font-size: 15px;
       font-weight: 700;
-      letter-spacing: -0.3px;
     }
 
     .sidebar-subtitle {
-      color: var(--gray-400);
+      color: #94a3b8;
       font-size: 11px;
       margin-top: 1px;
     }
 
+    /* Sidebar nav */
     .sidebar-nav {
-      padding: 16px 12px;
+      padding: 14px 12px;
       flex: 1;
     }
 
@@ -102,10 +78,9 @@
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.8px;
-      color: var(--gray-400);
+      color: #64748b;
       padding: 0 8px;
       margin-bottom: 6px;
-      margin-top: 12px;
     }
 
     .nav-btn {
@@ -123,22 +98,33 @@
       font-weight: 500;
       font-family: inherit;
       text-align: left;
-      transition: background .15s, color .15s;
+      transition: background 0.15s, color 0.15s;
+      margin-bottom: 2px;
     }
 
-    .nav-btn:hover { background: var(--navy-light); color: var(--white); }
+    .nav-btn:hover {
+      background: #1e3a73;
+      color: #ffffff;
+    }
 
     .nav-btn.active {
-      background: var(--accent);
-      color: var(--white);
+      background: #2563eb;
+      color: #ffffff;
     }
 
-    .nav-icon { font-size: 15px; width: 20px; text-align: center; }
+    .nav-icon {
+      font-size: 15px;
+      width: 20px;
+      text-align: center;
+    }
 
-    /* ─── Health indicator ─────────────────────────────────────────────────── */
+    /* Sidebar footer */
     .sidebar-footer {
-      padding: 16px 20px;
-      border-top: 1px solid var(--navy-light);
+      padding: 16px 18px;
+      border-top: 1px solid #1e3a73;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
     }
 
     .health-row {
@@ -146,383 +132,153 @@
       align-items: center;
       gap: 8px;
       font-size: 12px;
-      color: var(--gray-400);
+      color: #64748b;
     }
 
     .health-dot {
       width: 8px;
       height: 8px;
       border-radius: 50%;
-      background: var(--gray-400);
+      background: #64748b;
       flex-shrink: 0;
-      transition: background .3s;
+      transition: background 0.3s;
     }
 
-    .health-dot.online  { background: #4ade80; box-shadow: 0 0 6px #4ade80aa; }
-    .health-dot.offline { background: var(--red); }
+    .health-dot.online  { background: #4ade80; box-shadow: 0 0 6px rgba(74, 222, 128, 0.6); }
+    .health-dot.offline { background: #dc2626; }
 
-    /* ─── Main content ─────────────────────────────────────────────────────── */
+    .doctor-link {
+      color: #94a3b8;
+      font-size: 12px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+
+    .doctor-link:hover { color: #ffffff; }
+
+    /* ── Main ── */
     .main {
       flex: 1;
+      background: #ffffff;
       overflow-y: auto;
-      padding: 32px 36px;
     }
 
-    /* ─── Views ────────────────────────────────────────────────────────────── */
-    .view { display: none; max-width: 780px; }
-    .view.active { display: block; animation: fadeIn .2s ease; }
+    /* ── Views ── */
+    .view { display: none; }
+    .view.active { display: block; }
 
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
-
-    /* ─── Page headers ─────────────────────────────────────────────────────── */
-    .page-header { margin-bottom: 28px; }
-
-    .page-title {
-      font-size: 22px;
-      font-weight: 700;
-      color: var(--gray-800);
-      letter-spacing: -0.4px;
-    }
-
-    .page-desc {
-      margin-top: 4px;
-      color: var(--gray-600);
-      font-size: 13px;
-    }
-
-    /* ─── Card ─────────────────────────────────────────────────────────────── */
-    .card {
-      background: var(--white);
-      border-radius: var(--radius);
-      border: 1px solid var(--gray-200);
-      box-shadow: var(--shadow);
-      padding: 24px;
-      margin-bottom: 20px;
-    }
-
-    .card-title {
-      font-size: 13px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: var(--gray-600);
-      margin-bottom: 16px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid var(--gray-100);
-    }
-
-    /* ─── Form elements ────────────────────────────────────────────────────── */
-    .form-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-    }
-
-    .form-grid .span-2 { grid-column: span 2; }
-
-    .field { display: flex; flex-direction: column; gap: 5px; }
-
-    label {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--gray-600);
-      letter-spacing: 0.2px;
-    }
-
-    input[type="text"],
-    input[type="number"],
-    select,
-    textarea {
-      padding: 9px 12px;
-      border: 1.5px solid var(--gray-200);
-      border-radius: 6px;
-      font-size: 13px;
-      font-family: inherit;
-      color: var(--gray-800);
-      background: var(--white);
-      transition: border-color .15s, box-shadow .15s;
-      outline: none;
-    }
-
-    input:focus, select:focus, textarea:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(37,99,235,.1);
-    }
-
-    textarea { resize: vertical; min-height: 110px; line-height: 1.5; }
-
-    .checkbox-row {
+    /* ── Queue two-column layout ── */
+    .queue-layout {
       display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 12px;
-      border: 1.5px solid var(--gray-200);
-      border-radius: 6px;
-      cursor: pointer;
-    }
-
-    .checkbox-row input[type="checkbox"] { width: 15px; height: 15px; accent-color: var(--accent); }
-    .checkbox-row span { font-size: 13px; color: var(--gray-800); }
-    .urgent-badge { font-size: 10px; background: #fef3c7; color: #92400e; padding: 1px 6px; border-radius: 10px; font-weight: 600; }
-
-    /* ─── Buttons ──────────────────────────────────────────────────────────── */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 7px;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 6px;
-      font-size: 13px;
-      font-weight: 600;
-      font-family: inherit;
-      cursor: pointer;
-      transition: background .15s, opacity .15s, transform .1s;
-    }
-
-    .btn:active { transform: scale(.98); }
-    .btn:disabled { opacity: .55; cursor: not-allowed; transform: none; }
-
-    .btn-primary { background: var(--accent); color: var(--white); }
-    .btn-primary:hover:not(:disabled) { background: var(--accent-hover); }
-
-    .btn-outline {
-      background: transparent;
-      color: var(--accent);
-      border: 1.5px solid var(--accent);
-    }
-
-    .btn-outline:hover:not(:disabled) { background: #eff6ff; }
-
-    .btn-approve { background: var(--green); color: var(--white); }
-    .btn-approve:hover:not(:disabled) { background: #15803d; }
-
-    .btn-deny { background: var(--red); color: var(--white); }
-    .btn-deny:hover:not(:disabled) { background: #b91c1c; }
-
-    .btn-sm { padding: 7px 14px; font-size: 12px; }
-
-    /* ─── Spinner ──────────────────────────────────────────────────────────── */
-    .spinner {
-      display: inline-block;
-      width: 14px;
-      height: 14px;
-      border: 2px solid rgba(255,255,255,.3);
-      border-top-color: var(--white);
-      border-radius: 50%;
-      animation: spin .7s linear infinite;
-    }
-
-    .spinner-dark {
-      border-color: rgba(37,99,235,.2);
-      border-top-color: var(--accent);
-    }
-
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* ─── Alert banners ────────────────────────────────────────────────────── */
-    .alert {
-      padding: 12px 16px;
-      border-radius: 6px;
-      font-size: 13px;
-      margin-bottom: 16px;
-      display: none;
-      align-items: flex-start;
-      gap: 10px;
-      line-height: 1.5;
-    }
-
-    .alert.show { display: flex; }
-    .alert-icon { font-size: 15px; margin-top: 1px; flex-shrink: 0; }
-
-    .alert-error   { background: var(--red-bg);    color: #991b1b;  border: 1px solid #fca5a5; }
-    .alert-success { background: var(--green-bg);  color: #14532d;  border: 1px solid #86efac; }
-    .alert-info    { background: #eff6ff;           color: #1e40af;  border: 1px solid #93c5fd; }
-
-    /* ─── Status badges ────────────────────────────────────────────────────── */
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      padding: 3px 10px;
-      border-radius: 20px;
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.4px;
-    }
-
-    .badge-approved    { background: var(--green-bg);  color: var(--green); }
-    .badge-denied      { background: var(--red-bg);    color: var(--red); }
-    .badge-pending     { background: #eff6ff;           color: var(--accent); }
-    .badge-info        { background: var(--yellow-bg); color: var(--yellow); }
-
-    /* ─── Result panels ────────────────────────────────────────────────────── */
-    .result-panel {
-      background: var(--gray-50);
-      border: 1px solid var(--gray-200);
-      border-radius: var(--radius);
-      padding: 20px;
-      margin-top: 20px;
-      display: none;
-    }
-
-    .result-panel.show { display: block; animation: fadeIn .2s ease; }
-
-    .result-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-
-    .result-field { display: flex; flex-direction: column; gap: 3px; }
-
-    .result-label {
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.4px;
-      color: var(--gray-400);
-    }
-
-    .result-value {
-      font-size: 14px;
-      color: var(--gray-800);
-      font-weight: 500;
-    }
-
-    /* ─── Confidence bar ───────────────────────────────────────────────────── */
-    .confidence-wrap { margin-top: 4px; }
-
-    .confidence-bar-bg {
-      height: 8px;
-      background: var(--gray-200);
-      border-radius: 4px;
+      height: 100vh;
       overflow: hidden;
-      margin-bottom: 4px;
     }
-
-    .confidence-bar-fill {
-      height: 100%;
-      border-radius: 4px;
-      transition: width .6s ease;
-    }
-
-    .conf-high   { background: var(--green); }
-    .conf-medium { background: #f59e0b; }
-    .conf-low    { background: var(--red); }
-
-    .confidence-pct {
-      font-size: 13px;
-      font-weight: 700;
-    }
-
-    /* ─── Criteria lists ───────────────────────────────────────────────────── */
-    .criteria-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
-
-    .criteria-list li {
+    .left-panel {
+      width: 38%;
+      min-width: 300px;
+      border-right: 1px solid #e2e8f0;
+      overflow-y: auto;
+      background: #f8fafc;
       display: flex;
-      align-items: flex-start;
-      gap: 8px;
-      font-size: 13px;
-      line-height: 1.45;
+      flex-direction: column;
     }
-
-    .ci { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
-
-    /* ─── Radio decision buttons ───────────────────────────────────────────── */
-    .decision-options {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 4px;
-    }
-
-    .decision-opt {
+    .right-panel {
       flex: 1;
-      min-width: 130px;
+      overflow-y: auto;
+      padding: 24px;
+      background: #ffffff;
     }
 
-    .decision-opt input[type="radio"] { display: none; }
-
-    .decision-opt label {
+    .panel-header {
       display: flex;
       align-items: center;
-      justify-content: center;
-      gap: 6px;
-      padding: 11px 10px;
-      border: 2px solid var(--gray-200);
-      border-radius: 6px;
+      justify-content: space-between;
+      padding: 16px;
+      border-bottom: 1px solid #e2e8f0;
+      background: white;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .panel-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #1e293b;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .count-badge {
+      background: #2563eb;
+      color: white;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 20px;
+    }
+    .refresh-btn {
+      background: none;
+      border: none;
       cursor: pointer;
+      font-size: 16px;
+      padding: 4px;
+      border-radius: 4px;
+    }
+    .refresh-btn:hover { background: #f1f5f9; }
+
+    .case-row {
+      padding: 14px 16px;
+      border-bottom: 1px solid #e2e8f0;
+      cursor: pointer;
+      background: white;
+      transition: background 0.1s;
+      border-left: 3px solid transparent;
+    }
+    .case-row:hover { background: #f8fafc; }
+    .case-row.selected {
+      background: #eff6ff;
+      border-left-color: #2563eb;
+    }
+    .case-row-name {
       font-size: 13px;
       font-weight: 600;
-      transition: border-color .15s, background .15s;
-      text-transform: none;
-      letter-spacing: 0;
-      color: var(--gray-600);
+      color: #1e293b;
+      margin-bottom: 3px;
+    }
+    .case-row-meta {
+      font-size: 11px;
+      color: #94a3b8;
+      margin-bottom: 6px;
+    }
+    .case-row-badges {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
     }
 
-    .decision-opt input[value="APPROVED"]:checked + label {
-      border-color: var(--green);
-      background: var(--green-bg);
-      color: var(--green);
+    .badge {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
     }
+    .badge-urgent       { background: #fef3c7; color: #92400e; }
+    .badge-not-analyzed { background: #f1f5f9; color: #64748b; }
+    .badge-ready        { background: #dbeafe; color: #1d4ed8; }
 
-    .decision-opt input[value="DENIED"]:checked + label {
-      border-color: var(--red);
-      background: var(--red-bg);
-      color: var(--red);
-    }
-
-    .decision-opt input[value="REQUEST_MORE_INFO"]:checked + label {
-      border-color: var(--yellow);
-      background: var(--yellow-bg);
-      color: var(--yellow);
-    }
-
-    /* ─── Case ID link ─────────────────────────────────────────────────────── */
-    .case-id-link {
-      font-family: monospace;
-      font-size: 12px;
-      background: var(--gray-100);
-      padding: 2px 7px;
-      border-radius: 4px;
-      color: var(--accent);
-      cursor: pointer;
-      border: none;
-    }
-
-    .case-id-link:hover { text-decoration: underline; }
-
-    /* ─── Section divider ──────────────────────────────────────────────────── */
-    .divider {
-      height: 1px;
-      background: var(--gray-200);
-      margin: 20px 0;
-    }
-
-    /* ─── Loading overlay inside card ─────────────────────────────────────── */
-    .loading-row {
-      display: none;
+    .empty-state {
+      display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: 10px;
-      color: var(--gray-600);
-      font-size: 13px;
-      padding: 12px 0;
-    }
-
-    .loading-row.show { display: flex; }
-
-    /* ─── Responsive ───────────────────────────────────────────────────────── */
-    @media (max-width: 700px) {
-      .form-grid { grid-template-columns: 1fr; }
-      .form-grid .span-2 { grid-column: span 1; }
-      .result-grid { grid-template-columns: 1fr; }
-      .main { padding: 20px 16px; }
-      .sidebar { width: 56px; min-width: 56px; }
-      .sidebar-title, .sidebar-subtitle, .nav-label, .nav-btn span, .health-row span { display: none; }
-      .nav-btn { justify-content: center; padding: 10px; }
+      justify-content: center;
+      height: 60vh;
+      color: #64748b;
+      font-size: 14px;
+      gap: 8px;
+      text-align: center;
     }
   </style>
 </head>
@@ -530,9 +286,6 @@
 
 <div class="shell">
 
-  <!-- ═══════════════════════════════════════════════════════════════════════
-       SIDEBAR
-  ═══════════════════════════════════════════════════════════════════════ -->
   <aside class="sidebar">
     <div class="sidebar-header">
       <div class="sidebar-logo">
@@ -546,757 +299,450 @@
 
     <nav class="sidebar-nav">
       <div class="nav-label">Workflow</div>
-      <button class="nav-btn active" onclick="showView('submit')" id="nav-submit">
+      <button class="nav-btn active" id="nav-queue" onclick="showView('queue')">
         <span class="nav-icon">📋</span>
-        <span>Submit Request</span>
+        <span>Case Queue</span>
       </button>
-      <button class="nav-btn" onclick="showView('status')" id="nav-status">
-        <span class="nav-icon">🔍</span>
-        <span>Check Status</span>
-      </button>
-      <button class="nav-btn" onclick="showView('review')" id="nav-review">
-        <span class="nav-icon">👩‍⚕️</span>
-        <span>Nurse Review</span>
+      <button class="nav-btn" id="nav-history" onclick="showView('history')">
+        <span class="nav-icon">🕐</span>
+        <span>Case History</span>
       </button>
     </nav>
 
     <div class="sidebar-footer">
       <div class="health-row">
         <div class="health-dot" id="health-dot"></div>
-        <span id="health-label">Checking API...</span>
+        <span id="health-label">Checking...</span>
       </div>
+      <a href="/doctor-portal" class="doctor-link">← Doctor Portal</a>
     </div>
   </aside>
 
-  <!-- ═══════════════════════════════════════════════════════════════════════
-       MAIN CONTENT
-  ═══════════════════════════════════════════════════════════════════════ -->
   <main class="main">
-
-    <!-- ─── VIEW 1: Submit ─────────────────────────────────────────────── -->
-    <section class="view active" id="view-submit">
-      <div class="page-header">
-        <div class="page-title">Submit Prior Authorization</div>
-        <div class="page-desc">Submit a new prior authorization request for AI-assisted clinical review.</div>
-      </div>
-
-      <!-- Demo info banner -->
-      <div style="background:#eff6ff; border:1px solid #93c5fd; border-radius:var(--radius); padding:14px 16px; margin-bottom:16px; font-size:13px; color:#1e40af; line-height:1.6;">
-        <div style="font-weight:600; margin-bottom:6px;">🧪 Demo Mode — Sample Member IDs available for testing:</div>
-        <div style="display:flex; flex-direction:column; gap:3px;">
-          <div>
-            <button type="button" class="case-id-link" onclick="fillMemberId('06e30f00-63d9-7a7d-d30b-79f32641f372')" title="Click to fill Member ID field">06e30f00-63d9-7a7d-d30b-79f32641f372</button>
-            <span style="color:#3b82f6;"> — Joella Schamberger (Anthem)</span>
+    <div class="view active" id="view-queue">
+      <div class="queue-layout">
+        <div class="left-panel" id="left-panel">
+          <div class="panel-header">
+            <div class="panel-title">Pending Cases <span class="count-badge" id="pending-count">0</span></div>
+            <button onclick="loadQueue()" class="refresh-btn">🔄</button>
           </div>
-          <div>
-            <button type="button" class="case-id-link" onclick="fillMemberId('8c252c04-6279-c924-bda1-70857ed428d4')" title="Click to fill Member ID field">8c252c04-6279-c924-bda1-70857ed428d4</button>
-            <span style="color:#3b82f6;"> — Member 2</span>
-          </div>
+          <div id="pending-list"></div>
         </div>
-        <div style="margin-top:6px; font-size:11px; color:#60a5fa;">Click any member ID to auto-fill the Member ID field.</div>
-      </div>
-
-      <div class="card">
-        <div class="card-title">Request Details</div>
-
-        <div id="submit-error" class="alert alert-error">
-          <span class="alert-icon">⚠️</span>
-          <span id="submit-error-msg"></span>
-        </div>
-
-        <form id="submit-form" onsubmit="handleSubmit(event)">
-          <div class="form-grid">
-            <div class="field">
-              <label for="member_id">Member ID</label>
-              <input type="text" id="member_id" placeholder="e.g. 06e30f00-63d9-7a7d-d30b-79f32641f372" required />
-            </div>
-            <div class="field">
-              <label for="provider_npi">Provider NPI</label>
-              <input type="text" id="provider_npi" placeholder="1234567890" required />
-            </div>
-            <div class="field">
-              <label for="cpt_code">CPT Code</label>
-              <input type="text" id="cpt_code" placeholder="72148" maxlength="5" required />
-            </div>
-            <div class="field">
-              <label for="icd_code">ICD-10 Code</label>
-              <input type="text" id="icd_code" placeholder="M54.5" required />
-            </div>
-            <div class="field">
-              <label for="case_type">Case Type</label>
-              <select id="case_type">
-                <option value="outpatient">Outpatient</option>
-                <option value="inpatient">Inpatient</option>
-                <option value="medication">Medication</option>
-                <option value="dme">DME (Durable Medical Equipment)</option>
-                <option value="behavioral">Behavioral Health</option>
-              </select>
-            </div>
-            <div class="field" style="justify-content: flex-end;">
-              <label>&nbsp;</label>
-              <label class="checkbox-row">
-                <input type="checkbox" id="is_urgent" />
-                <span>Urgent / Expedited Review</span>
-                <span class="urgent-badge">72hr SLA</span>
-              </label>
-            </div>
-            <div class="field span-2">
-              <label for="clinical_notes">Clinical Notes</label>
-              <textarea id="clinical_notes" placeholder="Provide clinical justification, treatment history, failed conservative therapies, imaging findings, and medical necessity documentation..." required></textarea>
-            </div>
+        <div class="right-panel" id="right-panel">
+          <div id="detail-empty" class="empty-state">
+            <div style="font-size:48px">👈</div>
+            <div>Select a case from the queue</div>
+            <div style="font-size:12px; color:#94a3b8; margin-top:4px">Click a pending case to begin review</div>
           </div>
-
-          <div style="margin-top: 20px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-            <button type="submit" class="btn btn-primary" id="submit-btn">
-              <span id="submit-btn-text">Submit for AI Review</span>
-              <span id="submit-spinner" class="spinner" style="display:none;"></span>
-            </button>
-            <button type="button" class="btn btn-outline" onclick="loadSampleData()">🧪 Load Sample Data</button>
-            <div class="loading-row" id="submit-loading">
-              <div class="spinner spinner-dark"></div>
-              <span>Running AI clinical reasoning...</span>
-            </div>
-          </div>
-        </form>
-      </div>
-
-      <!-- Result -->
-      <div class="result-panel" id="submit-result">
-        <div class="card-title" style="margin-bottom:14px;">Submission Result</div>
-
-        <div id="submit-success" class="alert alert-success" style="margin-bottom:14px;">
-          <span class="alert-icon">✅</span>
-          <span id="submit-success-msg"></span>
-        </div>
-
-        <div class="result-grid">
-          <div class="result-field">
-            <div class="result-label">Case ID</div>
-            <div class="result-value" id="res-case-id" style="font-family:monospace; font-size:12px;"></div>
-          </div>
-          <div class="result-field">
-            <div class="result-label">Status</div>
-            <div class="result-value" id="res-status"></div>
-          </div>
-          <div class="result-field span-2" style="grid-column:span 2;">
-            <div class="result-label">Message</div>
-            <div class="result-value" id="res-message" style="font-size:13px; color:var(--gray-600);"></div>
-          </div>
-          <div class="result-field span-2" style="grid-column:span 2;">
-            <div class="result-label">Estimated Decision Time</div>
-            <div class="result-value" id="res-eta" style="font-size:13px;"></div>
-          </div>
-        </div>
-
-        <div class="divider"></div>
-
-        <div style="display:flex; gap:10px; flex-wrap:wrap;">
-          <button class="btn btn-outline btn-sm" onclick="goToStatus()">🔍 Check Status</button>
-          <button class="btn btn-outline btn-sm" onclick="goToReview()">👩‍⚕️ Go to Nurse Review</button>
         </div>
       </div>
-    </section>
-
-    <!-- ─── VIEW 2: Status ─────────────────────────────────────────────── -->
-    <section class="view" id="view-status">
-      <div class="page-header">
-        <div class="page-title">Check Case Status</div>
-        <div class="page-desc">Look up the current status and AI recommendation for a prior authorization case.</div>
-      </div>
-
-      <div class="card">
-        <div class="card-title">Case Lookup</div>
-        <div id="status-error" class="alert alert-error">
-          <span class="alert-icon">⚠️</span>
-          <span id="status-error-msg"></span>
-        </div>
-        <div style="display:flex; gap:10px; align-items:flex-end;">
-          <div class="field" style="flex:1;">
-            <label for="status-case-id">Case ID</label>
-            <input type="text" id="status-case-id" placeholder="Enter case UUID" />
-          </div>
-          <button class="btn btn-primary" onclick="handleCheckStatus()" id="status-btn" style="flex-shrink:0; margin-bottom:0;">
-            <span id="status-btn-text">Check Status</span>
-            <span id="status-spinner" class="spinner" style="display:none;"></span>
-          </button>
-        </div>
-      </div>
-
-      <div class="result-panel" id="status-result">
-        <div class="card-title" style="margin-bottom:16px;">Case Details</div>
-
-        <div class="result-grid" style="gap:16px;">
-          <div class="result-field">
-            <div class="result-label">Case ID</div>
-            <div class="result-value" id="st-case-id" style="font-family:monospace; font-size:12px;"></div>
-          </div>
-          <div class="result-field">
-            <div class="result-label">Status</div>
-            <div id="st-status"></div>
-          </div>
-          <div class="result-field">
-            <div class="result-label">Member ID</div>
-            <div class="result-value" id="st-member" style="font-family:monospace; font-size:12px;"></div>
-          </div>
-          <div class="result-field">
-            <div class="result-label">AI Recommendation</div>
-            <div id="st-ai-rec"></div>
-          </div>
-          <div class="result-field" style="grid-column:span 2;">
-            <div class="result-label">Confidence Score</div>
-            <div class="confidence-wrap">
-              <div class="confidence-bar-bg">
-                <div class="confidence-bar-fill" id="st-conf-bar" style="width:0%"></div>
-              </div>
-              <span class="confidence-pct" id="st-conf-pct">—</span>
-            </div>
-          </div>
-          <div class="result-field">
-            <div class="result-label">Requires Human Review</div>
-            <div class="result-value" id="st-human-review"></div>
-          </div>
-          <div class="result-field">
-            <div class="result-label">Submitted At</div>
-            <div class="result-value" id="st-submitted"></div>
-          </div>
-          <div class="result-field" style="grid-column:span 2;" id="st-nurse-row" style="display:none;">
-            <div class="result-label">Nurse Decision</div>
-            <div id="st-nurse-decision"></div>
-          </div>
-        </div>
-
-        <div class="divider"></div>
-        <button class="btn btn-outline btn-sm" onclick="goToReview()">👩‍⚕️ Open Nurse Review</button>
-      </div>
-    </section>
-
-    <!-- ─── VIEW 3: Nurse Review ───────────────────────────────────────── -->
-    <section class="view" id="view-review">
-      <div class="page-header">
-        <div class="page-title">Nurse Review</div>
-        <div class="page-desc">Review AI recommendation and record final authorization decision.</div>
-      </div>
-
-      <!-- Load case -->
-      <div class="card">
-        <div class="card-title">Load Case</div>
-        <div id="review-load-error" class="alert alert-error">
-          <span class="alert-icon">⚠️</span>
-          <span id="review-load-error-msg"></span>
-        </div>
-        <div style="display:flex; gap:10px; align-items:flex-end;">
-          <div class="field" style="flex:1;">
-            <label for="review-case-id">Case ID</label>
-            <input type="text" id="review-case-id" placeholder="Enter case UUID" />
-          </div>
-          <button class="btn btn-primary" onclick="handleLoadCase()" id="load-case-btn" style="flex-shrink:0;">
-            <span id="load-case-btn-text">Load Case</span>
-            <span id="load-case-spinner" class="spinner" style="display:none;"></span>
-          </button>
-        </div>
-      </div>
-
-      <!-- Case detail panel -->
-      <div id="review-detail" style="display:none;">
-
-        <!-- AI Summary -->
-        <div class="card">
-          <div class="card-title">AI Clinical Assessment</div>
-
-          <div class="result-grid" style="margin-bottom:16px;">
-            <div class="result-field">
-              <div class="result-label">AI Recommendation</div>
-              <div id="rv-ai-rec" style="margin-top:2px;"></div>
-            </div>
-            <div class="result-field">
-              <div class="result-label">Confidence Score</div>
-              <div class="confidence-wrap">
-                <div class="confidence-bar-bg">
-                  <div class="confidence-bar-fill" id="rv-conf-bar" style="width:0%"></div>
-                </div>
-                <span class="confidence-pct" id="rv-conf-pct">—</span>
-              </div>
-            </div>
-            <div class="result-field" style="grid-column:span 2;">
-              <div class="result-label">Policy Basis</div>
-              <div class="result-value" id="rv-policy" style="font-size:13px; color:var(--gray-600); margin-top:2px;"></div>
-            </div>
-          </div>
-
-          <div class="divider" style="margin:16px 0;"></div>
-
-          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;" id="rv-criteria-grid">
-            <!-- criteria filled by JS -->
-          </div>
-
-          <div id="rv-missing-section" style="display:none; margin-top:16px;">
-            <div class="result-label" style="margin-bottom:8px;">⚠️ Missing Information</div>
-            <ul class="criteria-list" id="rv-missing-list"></ul>
-          </div>
-        </div>
-
-        <!-- Nurse decision form -->
-        <div class="card">
-          <div class="card-title">Record Decision</div>
-
-          <div id="review-submit-error" class="alert alert-error">
-            <span class="alert-icon">⚠️</span>
-            <span id="review-submit-error-msg"></span>
-          </div>
-
-          <div id="review-submit-success" class="alert alert-success" style="display:none;">
-            <span class="alert-icon">✅</span>
-            <span id="review-submit-success-msg"></span>
-          </div>
-
-          <form id="review-form" onsubmit="handleSubmitReview(event)">
-            <div class="form-grid">
-              <div class="field">
-                <label for="nurse-id">Nurse ID</label>
-                <input type="text" id="nurse-id" placeholder="e.g. RN-78901" required />
-              </div>
-              <div class="field">
-                <label>&nbsp;</label><!-- spacer -->
-              </div>
-              <div class="field span-2">
-                <label>Decision</label>
-                <div class="decision-options">
-                  <div class="decision-opt">
-                    <input type="radio" name="nurse-decision" id="dec-approve" value="APPROVED" onchange="onDecisionChange()" />
-                    <label for="dec-approve">✅ Approve</label>
-                  </div>
-                  <div class="decision-opt">
-                    <input type="radio" name="nurse-decision" id="dec-deny" value="DENIED" onchange="onDecisionChange()" />
-                    <label for="dec-deny">❌ Deny</label>
-                  </div>
-                  <div class="decision-opt">
-                    <input type="radio" name="nurse-decision" id="dec-more" value="REQUEST_MORE_INFO" onchange="onDecisionChange()" />
-                    <label for="dec-more">📋 Request More Info</label>
-                  </div>
-                </div>
-              </div>
-              <div class="field span-2" id="override-reason-field" style="display:none;">
-                <label for="override-reason">Override Reason <span style="color:var(--red);">*</span></label>
-                <textarea id="override-reason" placeholder="Document clinical or policy rationale for overriding the AI recommendation (required when decision differs from AI)..."></textarea>
-              </div>
-            </div>
-
-            <div style="margin-top:20px; display:flex; gap:10px; align-items:center;">
-              <button type="submit" class="btn btn-primary" id="review-submit-btn">
-                <span id="review-btn-text">Submit Decision</span>
-                <span id="review-spinner" class="spinner" style="display:none;"></span>
-              </button>
-            </div>
-          </form>
-        </div>
-
-      </div><!-- /review-detail -->
-    </section>
-
+    </div>
+    <div class="view" id="view-history">
+      <p class="placeholder">History view</p>
+    </div>
   </main>
+
 </div>
 
-<!-- ═══════════════════════════════════════════════════════════════════════
-     JAVASCRIPT
-═══════════════════════════════════════════════════════════════════════ -->
 <script>
   const API = 'http://localhost:8000';
 
-  // ── Shared state ─────────────────────────────────────────────────────────
-  let lastCaseId   = null;   // set after submit; auto-fills other views
-  let loadedStatus = null;   // cached status for review view
-
-  // ── Sample data helpers ───────────────────────────────────────────────────
-  function fillMemberId(id) {
-    document.getElementById('member_id').value = id;
-    document.getElementById('member_id').focus();
+  function showView(name) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('view-' + name).classList.add('active');
+    document.getElementById('nav-' + name).classList.add('active');
   }
 
-  function loadSampleData() {
-    document.getElementById('member_id').value    = '06e30f00-63d9-7a7d-d30b-79f32641f372';
-    document.getElementById('cpt_code').value     = '72148';
-    document.getElementById('icd_code').value     = 'M54.5';
-    document.getElementById('provider_npi').value = '1234567890';
-    document.getElementById('case_type').value    = 'outpatient';
-    document.getElementById('is_urgent').checked  = false;
-    document.getElementById('clinical_notes').value =
-      'Patient presents with 6-week history of low back pain radiating to left leg ' +
-      '(L4-L5 distribution). Neurological symptoms include numbness and tingling in ' +
-      'left foot. Conservative treatment with 6 weeks of physical therapy and NSAIDs ' +
-      '(naproxen 500mg BID) has failed to provide adequate relief. Plain X-ray ' +
-      'completed 2 weeks ago showed no fracture. Requesting MRI lumbar spine without ' +
-      'contrast to evaluate for disc herniation or nerve root compression.';
-  }
-
-  // ── Health check ─────────────────────────────────────────────────────────
   async function checkHealth() {
     const dot   = document.getElementById('health-dot');
     const label = document.getElementById('health-label');
     try {
-      const r = await fetch(`${API}/health`, { signal: AbortSignal.timeout(4000) });
+      const r = await fetch(API + '/health', { signal: AbortSignal.timeout(4000) });
       if (r.ok) {
-        dot.className   = 'health-dot online';
+        dot.className     = 'health-dot online';
         label.textContent = 'API Online';
       } else {
-        throw new Error('non-ok');
+        throw new Error();
       }
     } catch {
-      dot.className   = 'health-dot offline';
+      dot.className     = 'health-dot offline';
       label.textContent = 'API Offline';
     }
   }
 
   checkHealth();
-  setInterval(checkHealth, 30_000);
 
-  // ── Navigation ────────────────────────────────────────────────────────────
-  function showView(name) {
-    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById(`view-${name}`).classList.add('active');
-    document.getElementById(`nav-${name}`).classList.add('active');
+  let allCases = [];
+  let selectedCaseId = null;
 
-    // Auto-fill case ID when switching views
-    if (name === 'status'  && lastCaseId) document.getElementById('status-case-id').value = lastCaseId;
-    if (name === 'review'  && lastCaseId) document.getElementById('review-case-id').value = lastCaseId;
-  }
-
-  function goToStatus() {
-    showView('status');
-    if (lastCaseId) handleCheckStatus();
-  }
-
-  function goToReview() {
-    showView('review');
-    if (lastCaseId) {
-      document.getElementById('review-case-id').value = lastCaseId;
-      handleLoadCase();
-    }
-  }
-
-  // ── Utilities ─────────────────────────────────────────────────────────────
-  function statusBadge(status) {
-    const map = {
-      APPROVED:            ['badge-approved', '✓ Approved'],
-      DENIED:              ['badge-denied',   '✗ Denied'],
-      PENDING_NURSE_REVIEW:['badge-pending',  '⏳ Pending Review'],
-      PENDING_AI_REVIEW:   ['badge-pending',  '⏳ AI Processing'],
-      PENDING_MORE_INFO:   ['badge-info',     '📋 More Info Needed'],
-      ERROR:               ['badge-denied',   '⚠ Error'],
-    };
-    const [cls, label] = map[status] || ['badge-pending', status];
-    return `<span class="badge ${cls}">${label}</span>`;
-  }
-
-  function aiRecBadge(rec) {
-    if (!rec) return '<span style="color:var(--gray-400)">—</span>';
-    const map = {
-      APPROVE:           ['badge-approved', '✓ Approve'],
-      DENY:              ['badge-denied',   '✗ Deny'],
-      INSUFFICIENT_INFO: ['badge-info',     '📋 Insufficient Info'],
-    };
-    const [cls, label] = map[rec] || ['badge-pending', rec];
-    return `<span class="badge ${cls}">${label}</span>`;
-  }
-
-  function renderConfBar(score, barId, pctId) {
-    if (score == null) return;
-    const pct = Math.round(score * 100);
-    const bar = document.getElementById(barId);
-    const pctEl = document.getElementById(pctId);
-    bar.style.width = pct + '%';
-    bar.className = 'confidence-bar-fill ' + (pct >= 75 ? 'conf-high' : pct >= 50 ? 'conf-medium' : 'conf-low');
-    pctEl.textContent = `${pct}%`;
-    pctEl.style.color = pct >= 75 ? 'var(--green)' : pct >= 50 ? '#f59e0b' : 'var(--red)';
-  }
-
-  function setLoading(btnId, textId, spinnerId, loading, text) {
-    const btn = document.getElementById(btnId);
-    btn.disabled = loading;
-    document.getElementById(textId).textContent = text;
-    document.getElementById(spinnerId).style.display = loading ? 'inline-block' : 'none';
-  }
-
-  function showAlert(id, msgId, msg) {
-    document.getElementById(id).classList.add('show');
-    document.getElementById(msgId).textContent = msg;
-  }
-
-  function hideAlert(id) {
-    document.getElementById(id).classList.remove('show');
-  }
-
-  function fmtDate(iso) {
-    if (!iso) return '—';
-    try { return new Date(iso).toLocaleString(); } catch { return iso; }
-  }
-
-  // ── VIEW 1: Submit ────────────────────────────────────────────────────────
-  async function handleSubmit(e) {
-    e.preventDefault();
-    hideAlert('submit-error');
-    document.getElementById('submit-result').classList.remove('show');
-
-    const payload = {
-      member_id:      document.getElementById('member_id').value.trim(),
-      cpt_code:       document.getElementById('cpt_code').value.trim(),
-      icd_code:       document.getElementById('icd_code').value.trim().toUpperCase(),
-      provider_npi:   document.getElementById('provider_npi').value.trim(),
-      clinical_notes: document.getElementById('clinical_notes').value.trim(),
-      is_urgent:      document.getElementById('is_urgent').checked,
-      case_type:      document.getElementById('case_type').value,
-      attachments:    [],
-    };
-
-    setLoading('submit-btn', 'submit-btn-text', 'submit-spinner', true, 'Submitting...');
-    document.getElementById('submit-loading').classList.add('show');
-
+  async function loadQueue() {
     try {
-      const r = await fetch(`${API}/prior-auth/submit`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-
+      const r = await fetch(API + '/prior-auth/queue');
+      if (!r.ok) return;
       const data = await r.json();
-
-      if (!r.ok) {
-        showAlert('submit-error', 'submit-error-msg', data.detail || 'Submission failed. Please try again.');
-        return;
-      }
-
-      lastCaseId = data.case_id;
-
-      document.getElementById('res-case-id').textContent  = data.case_id;
-      document.getElementById('res-status').innerHTML     = statusBadge(data.status);
-      document.getElementById('res-message').textContent  = data.message || '';
-      document.getElementById('res-eta').textContent      = data.estimated_decision_time || '';
-
-      const isApproved = data.status === 'APPROVED';
-      const isPending  = data.status === 'PENDING_NURSE_REVIEW';
-
-      document.getElementById('submit-success-msg').textContent =
-        isApproved ? `Case auto-approved with high confidence. Case ID: ${data.case_id}` :
-        isPending  ? `Case submitted and queued for nurse review. Case ID: ${data.case_id}` :
-                     `Case submitted. Case ID: ${data.case_id}`;
-
-      document.getElementById('submit-result').classList.add('show');
-
-    } catch (err) {
-      showAlert('submit-error', 'submit-error-msg', 'Network error — is the API server running?');
-    } finally {
-      setLoading('submit-btn', 'submit-btn-text', 'submit-spinner', false, 'Submit for AI Review');
-      document.getElementById('submit-loading').classList.remove('show');
-    }
+      allCases = data.cases || [];
+      const pending = allCases.filter(c => c.status === 'PENDING_NURSE_REVIEW');
+      const history = allCases.filter(c => c.status !== 'PENDING_NURSE_REVIEW');
+      document.getElementById('pending-count').textContent = pending.length;
+      renderPendingList(pending);
+      renderHistoryTable(history);
+    } catch {}
   }
 
-  // ── VIEW 2: Status ────────────────────────────────────────────────────────
-  async function handleCheckStatus() {
-    hideAlert('status-error');
-    document.getElementById('status-result').classList.remove('show');
-
-    const caseId = document.getElementById('status-case-id').value.trim();
-    if (!caseId) { showAlert('status-error', 'status-error-msg', 'Please enter a Case ID.'); return; }
-
-    setLoading('status-btn', 'status-btn-text', 'status-spinner', true, 'Checking...');
-
-    try {
-      const r    = await fetch(`${API}/prior-auth/${encodeURIComponent(caseId)}/status`);
-      const data = await r.json();
-
-      if (!r.ok) {
-        showAlert('status-error', 'status-error-msg', data.detail || 'Case not found.');
-        return;
-      }
-
-      document.getElementById('st-case-id').textContent = data.case_id;
-      document.getElementById('st-status').innerHTML    = statusBadge(data.status);
-      document.getElementById('st-member').textContent  = data.member_id || '—';
-      document.getElementById('st-ai-rec').innerHTML    = aiRecBadge(data.ai_recommendation);
-      document.getElementById('st-human-review').textContent = data.requires_human_review ? '⚠️ Yes' : '✓ No';
-      document.getElementById('st-submitted').textContent    = fmtDate(data.submitted_at);
-
-      renderConfBar(data.confidence_score, 'st-conf-bar', 'st-conf-pct');
-
-      const nurseRow = document.getElementById('st-nurse-row');
-      if (data.nurse_decision) {
-        nurseRow.style.display = '';
-        document.getElementById('st-nurse-decision').innerHTML =
-          `${aiRecBadge(data.nurse_decision.decision)} &nbsp; <span style="color:var(--gray-600); font-size:12px;">by ${data.nurse_decision.nurse_id}</span>`;
-      } else {
-        nurseRow.style.display = 'none';
-      }
-
-      document.getElementById('status-result').classList.add('show');
-
-    } catch (err) {
-      showAlert('status-error', 'status-error-msg', 'Network error — is the API server running?');
-    } finally {
-      setLoading('status-btn', 'status-btn-text', 'status-spinner', false, 'Check Status');
-    }
+  function timeAgo(iso) {
+    if (!iso) return '';
+    const diff = Date.now() - new Date(iso).getTime();
+    const m = Math.floor(diff / 60000);
+    if (m < 1) return 'just now';
+    if (m < 60) return m + 'm ago';
+    const h = Math.floor(m / 60);
+    if (h < 24) return h + 'h ago';
+    return Math.floor(h / 24) + 'd ago';
   }
 
-  // ── VIEW 3: Nurse Review — load case ─────────────────────────────────────
-  async function handleLoadCase() {
-    hideAlert('review-load-error');
-    document.getElementById('review-detail').style.display = 'none';
-
-    const caseId = document.getElementById('review-case-id').value.trim();
-    if (!caseId) { showAlert('review-load-error', 'review-load-error-msg', 'Please enter a Case ID.'); return; }
-
-    setLoading('load-case-btn', 'load-case-btn-text', 'load-case-spinner', true, 'Loading...');
-
-    try {
-      const r    = await fetch(`${API}/prior-auth/${encodeURIComponent(caseId)}/status`);
-      const data = await r.json();
-
-      if (!r.ok) {
-        showAlert('review-load-error', 'review-load-error-msg', data.detail || 'Case not found.');
-        return;
-      }
-
-      loadedStatus = data;
-      renderReviewPanel(data);
-      document.getElementById('review-detail').style.display = 'block';
-
-    } catch (err) {
-      showAlert('review-load-error', 'review-load-error-msg', 'Network error — is the API server running?');
-    } finally {
-      setLoading('load-case-btn', 'load-case-btn-text', 'load-case-spinner', false, 'Load Case');
-    }
-  }
-
-  function renderReviewPanel(data) {
-    // AI recommendation + confidence
-    document.getElementById('rv-ai-rec').innerHTML = aiRecBadge(data.ai_recommendation);
-    renderConfBar(data.confidence_score, 'rv-conf-bar', 'rv-conf-pct');
-
-    // policy basis — from checkpoint state if present
-    const policy = data.policy_basis || '(not available — case may still be processing)';
-    document.getElementById('rv-policy').textContent = policy;
-
-    // Criteria met / not met
-    const grid = document.getElementById('rv-criteria-grid');
-    const metList   = Array.isArray(data.criteria_met)     ? data.criteria_met     : [];
-    const notList   = Array.isArray(data.criteria_not_met) ? data.criteria_not_met : [];
-
-    let gridHTML = '';
-
-    if (metList.length > 0) {
-      gridHTML += `
-        <div>
-          <div class="result-label" style="margin-bottom:8px; color:var(--green);">✓ Criteria Met (${metList.length})</div>
-          <ul class="criteria-list">
-            ${metList.map(c => `<li><span class="ci">✅</span><span>${c}</span></li>`).join('')}
-          </ul>
-        </div>`;
-    }
-
-    if (notList.length > 0) {
-      gridHTML += `
-        <div>
-          <div class="result-label" style="margin-bottom:8px; color:var(--red);">✗ Criteria Not Met (${notList.length})</div>
-          <ul class="criteria-list">
-            ${notList.map(c => `<li><span class="ci">❌</span><span>${c}</span></li>`).join('')}
-          </ul>
-        </div>`;
-    }
-
-    if (!gridHTML) {
-      gridHTML = `<div style="color:var(--gray-400); font-size:13px; grid-column:span 2;">No criteria detail available. Case may be pending AI processing.</div>`;
-    }
-
-    grid.innerHTML = gridHTML;
-
-    // Missing information
-    const missing = Array.isArray(data.missing_information) ? data.missing_information : [];
-    const missingSection = document.getElementById('rv-missing-section');
-    if (missing.length > 0) {
-      missingSection.style.display = '';
-      document.getElementById('rv-missing-list').innerHTML =
-        missing.map(m => `<li><span class="ci">⚠️</span><span>${m}</span></li>`).join('');
-    } else {
-      missingSection.style.display = 'none';
-    }
-
-    // Pre-select decision matching AI recommendation
-    const aiRec = data.ai_recommendation;
-    if (aiRec === 'APPROVE')      document.getElementById('dec-approve').checked = true;
-    else if (aiRec === 'DENY')    document.getElementById('dec-deny').checked    = true;
-
-    onDecisionChange();
-  }
-
-  // Show/hide override reason based on whether decision matches AI rec
-  function onDecisionChange() {
-    const selected = document.querySelector('input[name="nurse-decision"]:checked');
-    if (!selected) return;
-
-    const aiRec  = loadedStatus?.ai_recommendation;
-    const mapAI  = { 'APPROVE': 'APPROVED', 'DENY': 'DENIED', 'INSUFFICIENT_INFO': 'REQUEST_MORE_INFO' };
-    const aiMapped = mapAI[aiRec] || null;
-
-    // Show override reason if nurse decision differs from AI OR on DENY
-    const showOverride = !aiMapped || selected.value !== aiMapped || selected.value === 'DENIED';
-    document.getElementById('override-reason-field').style.display = showOverride ? '' : 'none';
-
-    const overrideTA = document.getElementById('override-reason');
-    overrideTA.required = showOverride;
-  }
-
-  // ── VIEW 3: Submit review ─────────────────────────────────────────────────
-  async function handleSubmitReview(e) {
-    e.preventDefault();
-    hideAlert('review-submit-error');
-    document.getElementById('review-submit-success').style.display = 'none';
-
-    const caseId   = document.getElementById('review-case-id').value.trim();
-    const nurseId  = document.getElementById('nurse-id').value.trim();
-    const decision = document.querySelector('input[name="nurse-decision"]:checked')?.value;
-    const override = document.getElementById('override-reason').value.trim();
-
-    if (!decision) {
-      showAlert('review-submit-error', 'review-submit-error-msg', 'Please select a decision.');
+  function renderPendingList(cases) {
+    const el = document.getElementById('pending-list');
+    if (!cases.length) {
+      el.innerHTML = '<div class="empty-state"><div style="font-size:32px">✅</div><div>No pending cases</div></div>';
       return;
     }
+    el.innerHTML = cases.map(c => {
+      const name = (c.first_name && c.last_name)
+        ? c.first_name + ' ' + c.last_name
+        : 'Unknown Patient';
+      const analyzed = c.ai_analysis_status === 'COMPLETE';
+      const urgent = c.is_urgent;
+      const selected = c.case_id === selectedCaseId ? ' selected' : '';
+      const badges = [
+        urgent ? '<span class="badge badge-urgent">Urgent</span>' : '',
+        analyzed ? '<span class="badge badge-ready">Ready to Review</span>' : '<span class="badge badge-not-analyzed">Not Analyzed</span>',
+      ].filter(Boolean).join('');
+      return `<div class="case-row${selected}" data-id="${c.case_id}" onclick="loadCaseDetail('${c.case_id}')">
+        <div class="case-row-name">${name}</div>
+        <div class="case-row-meta">${c.cpt_code} · ${c.icd_code} · ${timeAgo(c.submitted_at)}</div>
+        <div class="case-row-badges">${badges}</div>
+      </div>`;
+    }).join('');
+  }
 
-    const payload = {
-      decision:        decision,
-      nurse_id:        nurseId,
-      override_reason: override || null,
-    };
+  function selectCase(caseId) {
+    selectedCaseId = caseId;
+    document.querySelectorAll('.case-row').forEach(r => {
+      r.classList.toggle('selected', r.dataset.id === caseId);
+    });
+    const c = allCases.find(x => x.case_id === caseId);
+    if (!c) return;
+    const name = (c.first_name && c.last_name)
+      ? c.first_name + ' ' + c.last_name
+      : c.member_id;
+    const rp = document.getElementById('right-panel');
+    const analyzed = c.ai_analysis_status === 'COMPLETE';
+    const reasoning = c.reasoning_output || {};
+    const memberHistory = c.member_context ? `
+      <div style="border:1px solid #e2e8f0;border-radius:8px;padding:16px;margin-bottom:20px">
+        <div style="font-size:13px;font-weight:700;color:#1e293b;margin-bottom:12px">👤 Member Clinical History</div>
+        ${(c.member_context.conditions && c.member_context.conditions.length > 0) ? `
+          <div style="margin-bottom:12px">
+            <div style="font-size:11px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Active Conditions</div>
+            ${c.member_context.conditions.filter(x => x.is_active).slice(0, 5).map(x => `
+              <div style="font-size:12px;color:#1e293b;margin-bottom:3px">• ${x.description || x.code}</div>
+            `).join('')}
+          </div>
+        ` : ''}
+        ${(c.member_context.medications && c.member_context.medications.length > 0) ? `
+          <div style="margin-bottom:12px">
+            <div style="font-size:11px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Recent Medications</div>
+            ${c.member_context.medications.slice(0, 5).map(x => `
+              <div style="font-size:12px;color:#1e293b;margin-bottom:3px">• ${x.description || x.code}</div>
+            `).join('')}
+          </div>
+        ` : ''}
+        ${(c.member_context.imaging && c.member_context.imaging.length > 0) ? `
+          <div>
+            <div style="font-size:11px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Prior Imaging</div>
+            ${c.member_context.imaging.slice(0, 3).map(x => `
+              <div style="font-size:12px;color:#1e293b;margin-bottom:3px">• ${x.modality_description || ''} ${x.bodysite_description || ''} (${x.study_date || ''})</div>
+            `).join('')}
+          </div>
+        ` : ''}
+      </div>
+    ` : '';
+    const reasoningCard = (analyzed && reasoning.reasoning) ? `
+      <div style="border:1px solid #e2e8f0;border-radius:8px;padding:16px;margin-bottom:20px">
+        <div style="font-size:13px;font-weight:700;color:#1e293b;margin-bottom:12px">🧠 AI Clinical Reasoning</div>
+        ${reasoning.policy_basis ? `
+          <div style="font-size:11px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Policy Basis</div>
+          <div style="font-size:12px;color:#475569;font-style:italic;margin-bottom:12px">${reasoning.policy_basis}</div>
+        ` : ''}
+        <div style="font-size:11px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Reasoning</div>
+        <div style="font-size:13px;color:#1e293b;line-height:1.6;margin-bottom:16px">${reasoning.reasoning}</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          ${(reasoning.criteria_met && reasoning.criteria_met.length > 0) ? `
+            <div>
+              <div style="font-size:11px;font-weight:700;color:#16a34a;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">✅ Criteria Met (${reasoning.criteria_met.length})</div>
+              ${reasoning.criteria_met.map(item => `
+                <div style="display:flex;gap:6px;margin-bottom:6px;font-size:12px;color:#1e293b;line-height:1.4">
+                  <span style="color:#16a34a;flex-shrink:0">✓</span><span>${item}</span>
+                </div>
+              `).join('')}
+            </div>
+          ` : ''}
+          ${(reasoning.criteria_not_met && reasoning.criteria_not_met.length > 0) ? `
+            <div>
+              <div style="font-size:11px;font-weight:700;color:#dc2626;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">❌ Criteria Not Met (${reasoning.criteria_not_met.length})</div>
+              ${reasoning.criteria_not_met.map(item => `
+                <div style="display:flex;gap:6px;margin-bottom:6px;font-size:12px;color:#1e293b;line-height:1.4">
+                  <span style="color:#dc2626;flex-shrink:0">✗</span><span>${item}</span>
+                </div>
+              `).join('')}
+            </div>
+          ` : ''}
+        </div>
+        ${(reasoning.missing_information && reasoning.missing_information.length > 0) ? `
+          <div style="margin-top:12px;background:#fef9c3;border-radius:6px;padding:12px">
+            <div style="font-size:11px;font-weight:700;color:#ca8a04;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">⚠️ Missing Information</div>
+            ${reasoning.missing_information.map(item => `
+              <div style="font-size:12px;color:#92400e;margin-bottom:4px">• ${item}</div>
+            `).join('')}
+          </div>
+        ` : ''}
+      </div>
+    ` : '';
+    const policies = (analyzed && c.retrieved_policies && c.retrieved_policies.length > 0)
+      ? `<div style="margin-bottom:20px">
+          <div style="font-size:13px;font-weight:700;color:#1e293b;margin-bottom:10px">📄 Policy Documents Used</div>
+          ${c.retrieved_policies.map((p, i) => `
+            <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:14px;margin-bottom:10px">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+                <span style="font-size:12px;font-weight:600;color:#1e40af">${p.filename || 'Policy ' + (i + 1)}</span>
+                <span style="background:#dbeafe;color:#1d4ed8;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px">${p.plan_name || ''}</span>
+              </div>
+              <div style="font-size:12px;color:#1e40af;line-height:1.6;white-space:pre-wrap">${p.content || ''}</div>
+            </div>
+          `).join('')}
+        </div>`
+      : '';
+    rp.innerHTML = `
+      <div style="max-width:720px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+          <div>
+            <div style="font-size:18px;font-weight:700;color:#1e293b">${name}</div>
+            <div style="font-size:12px;color:#64748b;margin-top:2px">Case ID: ${c.case_id}</div>
+          </div>
+          ${c.is_urgent ? '<span class="badge badge-urgent" style="font-size:12px;padding:4px 12px">URGENT</span>' : ''}
+        </div>
 
-    setLoading('review-submit-btn', 'review-btn-text', 'review-spinner', true, 'Submitting...');
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px">
+          <div style="background:#f8fafc;border-radius:8px;padding:14px">
+            <div style="font-size:10px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Clinical</div>
+            <div style="font-size:13px;font-weight:600;color:#1e293b">CPT ${c.cpt_code}</div>
+            <div style="font-size:12px;color:#64748b">ICD-10: ${c.icd_code}</div>
+            <div style="font-size:12px;color:#64748b">Type: ${c.case_type || '—'}</div>
+          </div>
+          <div style="background:#f8fafc;border-radius:8px;padding:14px">
+            <div style="font-size:10px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Provider</div>
+            <div style="font-size:13px;font-weight:600;color:#1e293b">NPI ${c.provider_npi || '—'}</div>
+            <div style="font-size:12px;color:#64748b">Submitted: ${timeAgo(c.submitted_at)}</div>
+          </div>
+        </div>
+
+        ${c.clinical_notes ? `<div style="background:#f8fafc;border-radius:8px;padding:14px;margin-bottom:20px">
+          <div style="font-size:10px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Clinical Notes</div>
+          <div style="font-size:13px;color:#1e293b;line-height:1.6">${c.clinical_notes}</div>
+        </div>` : ''}
+
+        ${memberHistory}
+
+        ${!analyzed ? `<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:16px;margin-bottom:20px;display:flex;align-items:center;gap:12px">
+          <div style="font-size:24px">🤖</div>
+          <div style="flex:1">
+            <div style="font-size:13px;font-weight:600;color:#92400e">AI Analysis Not Run</div>
+            <div style="font-size:12px;color:#b45309;margin-top:2px">Run AI analysis to get a recommendation before reviewing</div>
+          </div>
+          <button onclick="runAnalysis('${c.case_id}')" style="background:#2563eb;color:white;border:none;border-radius:6px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer">Run Analysis</button>
+        </div>` : `<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:16px;margin-bottom:20px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+            <div style="font-size:20px">🤖</div>
+            <div style="font-size:13px;font-weight:700;color:#166534">AI Recommendation: ${reasoning.decision || c.ai_recommendation || '—'}</div>
+            <span style="background:#dcfce7;color:#166534;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px">${Math.round((c.confidence_score || 0) * 100)}% confidence</span>
+          </div>
+          ${reasoning.summary ? `<div style="font-size:13px;color:#166534;line-height:1.5">${reasoning.summary}</div>` : ''}
+        </div>`}
+
+        ${reasoningCard}
+
+        ${policies}
+
+        ${analyzed ? `<div style="border:1px solid #e2e8f0;border-radius:8px;padding:20px;margin-bottom:20px">
+          <div style="font-size:13px;font-weight:700;color:#1e293b;margin-bottom:16px">Nurse Decision</div>
+          <div style="margin-bottom:16px">
+            <label style="font-size:12px;font-weight:600;color:#64748b;display:block;margin-bottom:8px">Nurse ID *</label>
+            <input type="text" id="nurse-id-input" placeholder="e.g. RN-78901"
+              style="width:100%;padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:6px;font-family:inherit;font-size:13px;outline:none" required />
+          </div>
+          <div style="display:flex;gap:10px;margin-bottom:16px">
+            <button onclick="setDecision('APPROVE')" id="btn-approve" style="flex:1;padding:10px;border-radius:6px;border:2px solid #e2e8f0;background:white;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s" onmouseover="this.style.borderColor='#22c55e'" onmouseout="if(window._decision!=='APPROVE')this.style.borderColor='#e2e8f0'">✅ Approve</button>
+            <button onclick="setDecision('DENY')" id="btn-deny" style="flex:1;padding:10px;border-radius:6px;border:2px solid #e2e8f0;background:white;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s" onmouseover="this.style.borderColor='#ef4444'" onmouseout="if(window._decision!=='DENY')this.style.borderColor='#e2e8f0'">❌ Deny</button>
+            <button onclick="setDecision('REQUEST_MORE_INFO')" id="btn-request" style="flex:1;padding:10px;border-radius:6px;border:2px solid #e2e8f0;background:white;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s" onmouseover="this.style.borderColor='#f59e0b'" onmouseout="if(window._decision!=='REQUEST_MORE_INFO')this.style.borderColor='#e2e8f0'">📋 Request Info</button>
+          </div>
+          <textarea id="nurse-notes" placeholder="Override reason (required if decision differs from AI recommendation)..." style="width:100%;padding:10px;border:1px solid #e2e8f0;border-radius:6px;font-family:inherit;font-size:13px;resize:vertical;min-height:80px;outline:none"></textarea>
+          <button onclick="submitReview('${c.case_id}')" style="margin-top:12px;width:100%;background:#2563eb;color:white;border:none;border-radius:6px;padding:11px;font-size:14px;font-weight:600;cursor:pointer">Submit Decision</button>
+          <div id="review-msg" style="margin-top:8px;font-size:12px;text-align:center"></div>
+        </div>` : ''}
+      </div>`;
+  }
+
+  function setDecision(d) {
+    window._decision = d;
+    ['btn-approve', 'btn-deny', 'btn-request'].forEach(id => {
+      const btn = document.getElementById(id);
+      if (btn) btn.style.borderColor = '#e2e8f0';
+    });
+    const map = { APPROVE: 'btn-approve', DENY: 'btn-deny', REQUEST_MORE_INFO: 'btn-request' };
+    const colors = { APPROVE: '#22c55e', DENY: '#ef4444', REQUEST_MORE_INFO: '#f59e0b' };
+    const btn = document.getElementById(map[d]);
+    if (btn) btn.style.borderColor = colors[d];
+  }
+
+  async function runAnalysis(caseId) {
+    const btn = document.querySelector('button[onclick="runAnalysis(\'' + caseId + '\')"]');
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = '⏳ Running... ~30s';
+    }
+
+    const rp = document.getElementById('right-panel');
+    const loadingBanner = document.createElement('div');
+    loadingBanner.id = 'analysis-loading';
+    loadingBanner.style.cssText =
+      'background:#eff6ff;border:1px solid #bfdbfe;' +
+      'border-radius:8px;padding:16px;margin-bottom:16px;' +
+      'font-size:13px;color:#1e40af;display:flex;' +
+      'align-items:center;gap:10px';
+    loadingBanner.innerHTML =
+      '<div style="font-size:20px">🔬</div>' +
+      '<div><strong>Running AI Analysis...</strong><br>' +
+      '<span style="font-size:12px">Fetching member data, retrieving policy documents, ' +
+      'running GPT-4o clinical reasoning. This takes ~15-30 seconds.</span></div>';
+    rp.prepend(loadingBanner);
 
     try {
-      const r    = await fetch(`${API}/prior-auth/${encodeURIComponent(caseId)}/review`, {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify(payload),
-      });
-
-      const data = await r.json();
-
-      if (!r.ok) {
-        showAlert('review-submit-error', 'review-submit-error-msg', data.detail || 'Review submission failed.');
-        return;
+      const r = await fetch(API + '/prior-auth/' + caseId + '/analyze', { method: 'POST' });
+      if (r.ok) {
+        await loadQueue();
+        await loadCaseDetail(caseId);
+      } else {
+        const err = await r.json();
+        loadingBanner.style.background = '#fee2e2';
+        loadingBanner.style.borderColor = '#fca5a5';
+        loadingBanner.style.color = '#991b1b';
+        loadingBanner.innerHTML = '⚠️ Analysis failed: ' + (err.detail || 'Unknown error');
       }
-
-      const decisionLabel = { APPROVED: 'Approved', DENIED: 'Denied', REQUEST_MORE_INFO: 'More Info Requested' }[decision] || decision;
-      document.getElementById('review-submit-success-msg').textContent =
-        `Decision recorded: ${decisionLabel}. Case ${caseId} updated successfully.`;
-      document.getElementById('review-submit-success').style.display = 'flex';
-
-      // Reload panel with updated status
-      loadedStatus = data;
-      renderReviewPanel(data);
-
-    } catch (err) {
-      showAlert('review-submit-error', 'review-submit-error-msg', 'Network error — is the API server running?');
-    } finally {
-      setLoading('review-submit-btn', 'review-btn-text', 'review-spinner', false, 'Submit Decision');
+    } catch (e) {
+      loadingBanner.style.background = '#fee2e2';
+      loadingBanner.innerHTML = '⚠️ Network error during analysis';
     }
   }
+
+  async function submitReview(caseId) {
+    const decision = window._decision;
+    const nurseId = document.getElementById('nurse-id-input')?.value?.trim();
+    const override = document.getElementById('nurse-notes')?.value?.trim();
+    const msg = document.getElementById('review-msg');
+    if (!decision) { if (msg) msg.textContent = 'Please select a decision first.'; return; }
+    if (!nurseId) { if (msg) msg.textContent = 'Please enter your Nurse ID.'; return; }
+    try {
+      const r = await fetch(API + '/prior-auth/' + caseId + '/review', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          decision: decision,
+          nurse_id: nurseId,
+          override_reason: override || null,
+          notes: override || null
+        })
+      });
+      if (r.ok) {
+        window._decision = null;
+
+        const decisionDiv = document.getElementById('review-msg')?.closest('div[style*="border:1px solid"]');
+        if (decisionDiv) {
+          decisionDiv.innerHTML = `
+            <div style="text-align:center;padding:24px">
+              <div style="font-size:48px;margin-bottom:12px">✅</div>
+              <div style="font-size:16px;font-weight:700;color:#16a34a;margin-bottom:6px">Decision Submitted</div>
+              <div style="font-size:13px;color:#64748b">Your decision has been recorded and the case is now closed.</div>
+            </div>
+          `;
+        }
+
+        setTimeout(async () => {
+          await loadQueue();
+          selectedCaseId = null;
+          document.getElementById('right-panel').innerHTML =
+            '<div class="empty-state">' +
+            '<div style="font-size:48px">✅</div>' +
+            '<div style="font-weight:600">Decision recorded</div>' +
+            '<div style="font-size:12px;color:#94a3b8;margin-top:4px">Select another case to continue reviewing</div>' +
+            '</div>';
+        }, 2000);
+      } else {
+        const e = await r.json();
+        if (msg) msg.textContent = e.detail || 'Submission failed.';
+      }
+    } catch { if (msg) msg.textContent = 'Network error.'; }
+  }
+
+  function renderHistoryTable(cases) {
+    const el = document.getElementById('view-history');
+    if (!cases.length) {
+      el.innerHTML = '<div class="empty-state" style="height:60vh"><div style="font-size:32px">📭</div><div>No completed cases</div></div>';
+      return;
+    }
+    const statusColor = { APPROVED: '#16a34a', DENIED: '#dc2626', PENDING_NURSE_REVIEW: '#d97706', PENDING: '#d97706' };
+    el.innerHTML = `<div style="padding:24px">
+      <div style="font-size:16px;font-weight:700;color:#1e293b;margin-bottom:16px">Case History</div>
+      <table style="width:100%;border-collapse:collapse;font-size:13px">
+        <thead>
+          <tr style="border-bottom:2px solid #e2e8f0">
+            <th style="text-align:left;padding:8px 12px;font-size:11px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:.5px">Patient</th>
+            <th style="text-align:left;padding:8px 12px;font-size:11px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:.5px">CPT</th>
+            <th style="text-align:left;padding:8px 12px;font-size:11px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:.5px">Status</th>
+            <th style="text-align:left;padding:8px 12px;font-size:11px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:.5px">AI Rec.</th>
+            <th style="text-align:left;padding:8px 12px;font-size:11px;font-weight:600;color:#64748b;text-transform:uppercase;letter-spacing:.5px">Submitted</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${cases.map(c => `<tr style="border-bottom:1px solid #f1f5f9">
+            <td style="padding:10px 12px;font-weight:500;color:#1e293b">${(c.first_name && c.last_name) ? c.first_name + ' ' + c.last_name : c.member_id}</td>
+            <td style="padding:10px 12px;color:#64748b">${c.cpt_code}</td>
+            <td style="padding:10px 12px"><span style="color:${statusColor[c.status] || '#64748b'};font-weight:600">${c.status}</span></td>
+            <td style="padding:10px 12px;color:#64748b">${c.ai_recommendation || '—'}</td>
+            <td style="padding:10px 12px;color:#64748b">${timeAgo(c.submitted_at)}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>`;
+  }
+
+  async function loadCaseDetail(caseId) {
+    try {
+      const r = await fetch(API + '/prior-auth/' + caseId + '/status');
+      const detail = await r.json();
+      const idx = allCases.findIndex(c => c.case_id === caseId);
+      if (idx >= 0) {
+        allCases[idx] = { ...allCases[idx], ...detail };
+      }
+      selectCase(caseId);
+    } catch (e) {
+      console.error('Detail load failed:', e);
+    }
+  }
+
+  loadQueue();
+  setInterval(loadQueue, 30000);
 </script>
+
 </body>
 </html>

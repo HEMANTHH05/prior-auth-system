@@ -1,29 +1,25 @@
 """
 app/main.py
 
-FastAPI HTTP entry point for the Prior Authorization AI system.
+New workflow (as of restructure):
+  Doctor submits  → case saved to DB immediately; no AI runs yet.
+  Nurse triggers  → POST /prior-auth/{case_id}/analyze runs full LangGraph pipeline.
+  Nurse decides   → POST /prior-auth/{case_id}/review records final decision.
 
-Exposes the LangGraph workflow as a REST API with four functional endpoints:
-  POST /prior-auth/submit          — run workflow, return case reference
-  GET  /prior-auth/{case_id}/status — poll case status
-  POST /prior-auth/{case_id}/review — nurse decision; resumes interrupted graph
-  GET  /health                      — liveness probe
-
-DB record lifecycle (coordinates with audit_output_node):
-  - For cases that complete without human review: audit_output_node writes the
-    DB record; main.py updates it to add thread_id so the review endpoint can
-    look it up later.
-  - For cases that are interrupted before human_review: audit_output_node has
-    NOT run yet, so main.py writes a preliminary record using thread_id as the
-    case_id.  After the nurse submits a decision and the graph resumes, main.py
-    patches the preliminary record with the final decision and status.
-
-This design keeps the graph nodes free of HTTP concerns while ensuring every
-case always has a queryable DB record from the moment /submit returns.
+Endpoints:
+  POST /prior-auth/submit              — save case, return case_id instantly
+  POST /prior-auth/{case_id}/analyze   — nurse triggers AI analysis (LangGraph)
+  GET  /prior-auth/queue               — all cases for nurse queue view
+  GET  /prior-auth/{case_id}/status    — status + full analysis output
+  POST /prior-auth/{case_id}/review    — nurse decision; resumes interrupted graph
+  GET  /health                         — liveness probe
+  GET  /doctor-portal                  — doctor submission UI
+  GET  /nurse-portal                   — nurse review portal UI
 """
 
 from __future__ import annotations
 
+import json
 import logging
 import os
 import uuid
@@ -68,8 +64,6 @@ app = FastAPI(
     version="1.0.0",
 )
 
-# Allow all origins for local frontend / EHR development.
-# Tighten to specific origins in production.
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -104,11 +98,12 @@ def _write_case_record(
     member_id: str,
     cpt_code: str,
     icd_code: str,
-    ai_recommendation: str | None,
-    nurse_decision: str | None,
-    status: str,
+    provider_npi: str,
+    clinical_notes: str,
+    is_urgent: bool,
+    case_type: str,
 ) -> bool:
-    """INSERT a new case record.  Returns True on success."""
+    """INSERT a new case record with status PENDING_NURSE_REVIEW. Returns True on success."""
     try:
         with _get_db() as conn:
             with conn.cursor() as cur:
@@ -116,12 +111,14 @@ def _write_case_record(
                     """
                     INSERT INTO prior_auth_requests (
                         case_id, thread_id, member_id, cpt_code, icd_code,
-                        ai_recommendation, nurse_decision, status, submitted_at
-                    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+                        provider_npi, clinical_notes, is_urgent, case_type,
+                        status, ai_analysis_status, submitted_at
+                    ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                     """,
                     (
                         case_id, thread_id, member_id, cpt_code, icd_code,
-                        ai_recommendation, nurse_decision, status,
+                        provider_npi, clinical_notes, is_urgent, case_type,
+                        "PENDING_NURSE_REVIEW", "NOT_RUN",
                         datetime.now(timezone.utc),
                     ),
                 )
@@ -132,8 +129,42 @@ def _write_case_record(
         return False
 
 
+def _update_case_analysis(
+    case_id: str,
+    ai_recommendation: str | None,
+    confidence_score: float | None,
+    reasoning_output: dict | None,
+    retrieved_policies: list | None,
+) -> None:
+    """Update case record with AI analysis results after /analyze runs."""
+    try:
+        with _get_db() as conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    """
+                    UPDATE prior_auth_requests
+                    SET ai_recommendation  = %s,
+                        confidence_score   = %s,
+                        reasoning_output   = %s,
+                        retrieved_policies = %s,
+                        ai_analysis_status = 'COMPLETE'
+                    WHERE case_id = %s
+                    """,
+                    (
+                        ai_recommendation,
+                        confidence_score,
+                        json.dumps(reasoning_output) if reasoning_output else None,
+                        json.dumps(retrieved_policies) if retrieved_policies else None,
+                        case_id,
+                    ),
+                )
+            conn.commit()
+    except Exception as exc:
+        logger.error("Analysis update failed for case_id=%s: %s", case_id, exc)
+
+
 def _update_thread_id(case_id: str, thread_id: str) -> None:
-    """Set thread_id on a record written by audit_output_node."""
+    """Set thread_id on a record."""
     try:
         with _get_db() as conn:
             with conn.cursor() as cur:
@@ -152,14 +183,16 @@ def _update_case_after_review(
     nurse_decision: str | None,
     nurse_id: str | None,
 ) -> None:
-    """Patch the preliminary record after the graph resumes and finishes."""
+    """Patch case after nurse submits decision; mark ai_analysis_status COMPLETE."""
     try:
         with _get_db() as conn:
             with conn.cursor() as cur:
                 cur.execute(
                     """
                     UPDATE prior_auth_requests
-                    SET status = %s, nurse_decision = %s
+                    SET status             = %s,
+                        nurse_decision     = %s,
+                        ai_analysis_status = 'COMPLETE'
                     WHERE case_id = %s
                     """,
                     (status, nurse_decision, case_id),
@@ -170,14 +203,17 @@ def _update_case_after_review(
 
 
 def _get_case_row(case_id: str) -> dict[str, Any] | None:
-    """Fetch a single case row by case_id.  Returns None if not found."""
+    """Fetch a single case row by case_id. Returns None if not found."""
     try:
         with _get_db() as conn:
             with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
                 cur.execute(
                     """
                     SELECT case_id, thread_id, member_id, cpt_code, icd_code,
-                           ai_recommendation, nurse_decision, status, submitted_at
+                           provider_npi, clinical_notes, is_urgent, case_type,
+                           ai_recommendation, nurse_decision, status, submitted_at,
+                           ai_analysis_status, confidence_score,
+                           reasoning_output, retrieved_policies
                     FROM prior_auth_requests
                     WHERE case_id = %s
                     LIMIT 1
@@ -211,7 +247,39 @@ def _build_initial_state(request: PriorAuthRequest, thread_id: str) -> dict[str,
         "attachments": request.attachments,
         "is_urgent": request.is_urgent,
         "case_type": request.case_type.value,
-        # Optional fields initialised to None so the TypedDict is complete
+        "intent": None,
+        "member_context": None,
+        "extracted_documents": None,
+        "retrieved_policies": None,
+        "reasoning_output": None,
+        "confidence_score": None,
+        "requires_human_review": None,
+        "case_id": None,
+        "nurse_decision": None,
+        "nurse_id": None,
+        "nurse_override_reason": None,
+        "audit_written": None,
+        "final_output": None,
+        "validation_error": None,
+        "thread_id": thread_id,
+    }
+
+
+def _build_initial_state_from_row(row: dict[str, Any], thread_id: str) -> dict[str, Any]:
+    """Build LangGraph initial state from a DB case row (used by /analyze endpoint)."""
+    return {
+        "raw_request": (
+            f"Prior auth request: CPT {row.get('cpt_code')}, ICD {row.get('icd_code')}, "
+            f"member {row.get('member_id')}, type {row.get('case_type', 'outpatient')}"
+        ),
+        "member_id": row.get("member_id", ""),
+        "cpt_code": row.get("cpt_code", ""),
+        "icd_code": row.get("icd_code", ""),
+        "provider_npi": row.get("provider_npi", ""),
+        "clinical_notes": row.get("clinical_notes", ""),
+        "attachments": [],
+        "is_urgent": bool(row.get("is_urgent", False)),
+        "case_type": row.get("case_type", "outpatient"),
         "intent": None,
         "member_context": None,
         "extracted_documents": None,
@@ -272,8 +340,11 @@ def _build_case_status_response(
         case_id=row["case_id"],
         status=case_status,
         member_id=row.get("member_id", ""),
-        ai_recommendation=row.get("ai_recommendation") or state_values.get("reasoning_output", {}).get("decision"),
-        confidence_score=state_values.get("confidence_score"),
+        ai_recommendation=(
+            row.get("ai_recommendation")
+            or state_values.get("reasoning_output", {}).get("decision")
+        ),
+        confidence_score=row.get("confidence_score") or state_values.get("confidence_score"),
         requires_human_review=requires_review,
         submitted_at=submitted_at,
         nurse_decision=nurse_decision_obj,
@@ -294,6 +365,11 @@ async def root():
     }
 
 
+@app.get("/doctor-portal")
+async def doctor_portal():
+    return FileResponse("frontend/doctor-portal.html")
+
+
 @app.get("/nurse-portal")
 async def nurse_portal():
     return FileResponse("frontend/index.html")
@@ -306,112 +382,202 @@ async def health():
 
 @app.post("/prior-auth/submit", response_model=PriorAuthResponse)
 async def submit_prior_auth(request: PriorAuthRequest):
-    """Submit a new prior authorization request.
+    """Save a new prior authorization request to the database immediately.
 
-    Launches the LangGraph workflow and streams it until it either completes
-    or pauses for nurse review.  Returns a case reference immediately so the
-    provider can poll for status.
-
-    Two completion paths:
-    1. Auto-decided (high confidence APPROVE / no human review needed):
-       audit_output_node runs during this call, writes the DB record, and we
-       update it with thread_id before returning.
-    2. Interrupted for human review:
-       audit_output_node has NOT run yet.  We write a preliminary DB record
-       using thread_id as the case_id so the caller can poll status and the
-       /review endpoint can look up the right LangGraph thread.
+    Does NOT run AI analysis. Returns a case_id instantly so the doctor
+    gets confirmation of receipt. The nurse triggers analysis separately
+    via POST /prior-auth/{case_id}/analyze.
     """
+    case_id = str(uuid.uuid4())
     thread_id = str(uuid.uuid4())
-    config = {"configurable": {"thread_id": thread_id}}
-    logger.info("POST /prior-auth/submit | member_id=%s thread_id=%s", request.member_id, thread_id)
+    logger.info(
+        "POST /prior-auth/submit | member_id=%s case_id=%s",
+        request.member_id, case_id,
+    )
 
-    try:
-        initial_state = _build_initial_state(request, thread_id)
-        state_values = _stream_to_completion(initial_state, config)
-    except Exception as exc:
-        logger.error("Graph execution failed for thread_id=%s: %s", thread_id, exc)
-        raise HTTPException(status_code=500, detail="Prior authorization processing failed. Please try again.")
+    success = _write_case_record(
+        case_id=case_id,
+        thread_id=thread_id,
+        member_id=request.member_id,
+        cpt_code=request.cpt_code,
+        icd_code=request.icd_code,
+        provider_npi=request.provider_npi,
+        clinical_notes=request.clinical_notes,
+        is_urgent=request.is_urgent,
+        case_type=request.case_type.value,
+    )
 
-    snapshot = graph_app.get_state(config)
-    interrupted = bool(snapshot.next and "human_review" in snapshot.next)
+    if not success:
+        raise HTTPException(status_code=500, detail="Failed to save prior authorization request.")
 
-    is_urgent = request.is_urgent
-    estimated_time = "Within 72 hours (urgent)" if is_urgent else "Within 2 business days"
-
-    if interrupted:
-        # The graph is paused before human_review. audit_output hasn't run.
-        # Use thread_id as the preliminary case_id so status polling works.
-        case_id = thread_id
-        status = CaseStatus.PENDING_NURSE_REVIEW
-        message = (
-            "Prior authorization request received. "
-            "Clinical review by a licensed nurse is required before a decision can be issued."
-        )
-        logger.info("Graph interrupted for nurse review | thread_id=%s", thread_id)
-
-        _write_case_record(
-            case_id=case_id,
-            thread_id=thread_id,
-            member_id=request.member_id,
-            cpt_code=request.cpt_code,
-            icd_code=request.icd_code,
-            ai_recommendation=(state_values.get("reasoning_output") or {}).get("decision"),
-            nurse_decision=None,
-            status=status.value,
-        )
-
-    else:
-        # Graph completed fully. audit_output_node wrote the DB record.
-        # Retrieve the case_id it generated and link our thread_id to it.
-        case_id = state_values.get("case_id")
-        final_output = state_values.get("final_output") or {}
-
-        if not case_id:
-            # audit_output_node failed silently — fall back to thread_id
-            logger.warning("No case_id in completed state; falling back to thread_id=%s", thread_id)
-            case_id = thread_id
-            _write_case_record(
-                case_id=case_id,
-                thread_id=thread_id,
-                member_id=request.member_id,
-                cpt_code=request.cpt_code,
-                icd_code=request.icd_code,
-                ai_recommendation=final_output.get("ai_recommendation"),
-                nurse_decision=None,
-                status=final_output.get("status", CaseStatus.PENDING_AI_REVIEW.value),
-            )
-        else:
-            _update_thread_id(case_id, thread_id)
-
-        raw_status = final_output.get("status", CaseStatus.PENDING_AI_REVIEW.value)
-        try:
-            status = CaseStatus(raw_status)
-        except ValueError:
-            status = CaseStatus.PENDING_AI_REVIEW
-
-        validation_error = state_values.get("validation_error")
-        if validation_error:
-            message = validation_error
-        else:
-            message = final_output.get("message", "Prior authorization request processed successfully.")
-
-        logger.info("Graph completed | case_id=%s status=%s", case_id, status)
+    estimated_time = "Within 72 hours (urgent)" if request.is_urgent else "Within 2 business days"
 
     return PriorAuthResponse(
         case_id=case_id,
-        status=status,
-        message=message,
+        status=CaseStatus.PENDING_NURSE_REVIEW,
+        message="Prior authorization request received. Awaiting nurse-triggered AI analysis.",
         estimated_decision_time=estimated_time,
     )
 
 
-@app.get("/prior-auth/{case_id}/status", response_model=CaseStatusResponse)
+@app.post("/prior-auth/{case_id}/analyze")
+async def analyze_prior_auth(case_id: str):
+    """Run the full LangGraph AI analysis for a case. Called by the nurse.
+
+    Fetches the case from DB, runs the AI workflow (member context fetch,
+    policy retrieval, clinical reasoning, confidence evaluation), stores
+    all results in DB, and returns the full analysis so the nurse can
+    read the policy language and AI reasoning before deciding.
+    """
+    logger.info("POST /prior-auth/%s/analyze", case_id)
+
+    row = _get_case_row(case_id)
+    if not row:
+        raise HTTPException(status_code=404, detail=f"Case '{case_id}' not found.")
+
+    if row.get("ai_analysis_status") == "COMPLETE":
+        raise HTTPException(
+            status_code=409,
+            detail="AI analysis has already been run for this case.",
+        )
+
+    thread_id = row.get("thread_id") or str(uuid.uuid4())
+    config = {"configurable": {"thread_id": thread_id}}
+
+    try:
+        initial_state = _build_initial_state_from_row(row, thread_id)
+        state_values = _stream_to_completion(initial_state, config)
+    except Exception as exc:
+        logger.error("Graph execution failed for case_id=%s: %s", case_id, exc)
+        raise HTTPException(status_code=500, detail="AI analysis failed. Please try again.")
+
+    reasoning_output = state_values.get("reasoning_output") or {}
+    retrieved_policies = state_values.get("retrieved_policies") or []
+    confidence_score = state_values.get("confidence_score")
+    ai_recommendation = reasoning_output.get("decision")
+
+    _update_case_analysis(
+        case_id=case_id,
+        ai_recommendation=ai_recommendation,
+        confidence_score=float(confidence_score) if confidence_score is not None else None,
+        reasoning_output=reasoning_output,
+        retrieved_policies=retrieved_policies if isinstance(retrieved_policies, list) else [],
+    )
+
+    logger.info(
+        "Analysis complete | case_id=%s decision=%s confidence=%s",
+        case_id, ai_recommendation, confidence_score,
+    )
+
+    return {
+        "case_id": case_id,
+        "decision": ai_recommendation,
+        "confidence_score": float(confidence_score) if confidence_score is not None else None,
+        "policy_basis": reasoning_output.get("policy_basis"),
+        "reasoning": reasoning_output.get("reasoning"),
+        "criteria_met": reasoning_output.get("criteria_met", []),
+        "criteria_not_met": reasoning_output.get("criteria_not_met", []),
+        "missing_information": reasoning_output.get("missing_information", []),
+        "retrieved_policies": retrieved_policies if isinstance(retrieved_policies, list) else [],
+    }
+
+
+@app.get("/members/samples")
+async def get_sample_members():
+    """Return 10 random members for demo sample data in the doctor portal."""
+    try:
+        with _get_db() as conn:
+            with conn.cursor(
+                cursor_factory=psycopg2.extras.RealDictCursor
+            ) as cur:
+                cur.execute("""
+                    SELECT
+                        m.id as member_id,
+                        m.first_name,
+                        m.last_name,
+                        m.birthdate,
+                        m.gender,
+                        m.city,
+                        m.state
+                    FROM members m
+                    ORDER BY RANDOM()
+                    LIMIT 10
+                """)
+                rows = cur.fetchall()
+                members = []
+                for row in rows:
+                    d = dict(row)
+                    if d.get("birthdate") and hasattr(d["birthdate"], "isoformat"):
+                        d["birthdate"] = d["birthdate"].isoformat()
+                    members.append(d)
+                return {"members": members}
+    except Exception as exc:
+        logger.error("Sample members fetch failed: %s", exc)
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to fetch sample members.",
+        )
+
+
+@app.get("/prior-auth/queue")
+async def get_case_queue():
+    """Return all cases sorted for the nurse queue.
+
+    Order: PENDING_NURSE_REVIEW first (newest first), then APPROVED,
+    DENIED, PENDING_MORE_INFO. Includes member first/last name via
+    LEFT JOIN so the nurse can see patient name without a separate lookup.
+    """
+    try:
+        with _get_db() as conn:
+            with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+                cur.execute(
+                    """
+                    SELECT
+                        p.case_id,
+                        p.member_id,
+                        p.cpt_code,
+                        p.icd_code,
+                        p.status,
+                        p.ai_analysis_status,
+                        p.is_urgent,
+                        p.submitted_at,
+                        p.nurse_decision,
+                        p.ai_recommendation,
+                        m.first_name,
+                        m.last_name
+                    FROM prior_auth_requests p
+                    LEFT JOIN members m ON p.member_id::text = m.id::text
+                    ORDER BY
+                        CASE p.status
+                            WHEN 'PENDING_NURSE_REVIEW' THEN 0
+                            WHEN 'APPROVED'             THEN 1
+                            WHEN 'DENIED'               THEN 2
+                            WHEN 'PENDING_MORE_INFO'    THEN 3
+                            ELSE 4
+                        END,
+                        p.submitted_at DESC
+                    """
+                )
+                rows = cur.fetchall()
+                cases = []
+                for row in rows:
+                    d = dict(row)
+                    if d.get("submitted_at") and hasattr(d["submitted_at"], "isoformat"):
+                        d["submitted_at"] = d["submitted_at"].isoformat()
+                    cases.append(d)
+                return {"cases": cases, "total": len(cases)}
+    except Exception as exc:
+        logger.error("Queue fetch failed: %s", exc)
+        raise HTTPException(status_code=500, detail="Failed to fetch case queue.")
+
+
+@app.get("/prior-auth/{case_id}/status")
 async def get_case_status(case_id: str):
     """Return the current status of a prior authorization case.
 
-    Combines the DB record (authoritative status and decision strings) with
-    the LangGraph checkpoint state (confidence score, full reasoning context)
-    to produce a complete CaseStatusResponse.
+    Includes reasoning_output and retrieved_policies stored in DB after
+    /analyze runs, so the nurse can read full policy language and AI
+    reasoning from a single endpoint.
     """
     logger.info("GET /prior-auth/%s/status", case_id)
 
@@ -419,36 +585,54 @@ async def get_case_status(case_id: str):
     if not row:
         raise HTTPException(status_code=404, detail=f"Case '{case_id}' not found.")
 
-    # Enrich with checkpoint state if the thread is still accessible
-    state_values: dict[str, Any] = {}
-    thread_id = row.get("thread_id")
-    if thread_id:
+    # Parse JSONB columns — psycopg2 may return them as dict (native) or str
+    reasoning_output = row.get("reasoning_output") or {}
+    if isinstance(reasoning_output, str):
         try:
-            snapshot = graph_app.get_state({"configurable": {"thread_id": thread_id}})
-            state_values = snapshot.values or {}
-        except Exception as exc:
-            logger.warning("Could not retrieve checkpoint for thread_id=%s: %s", thread_id, exc)
+            reasoning_output = json.loads(reasoning_output)
+        except Exception:
+            reasoning_output = {}
 
+    retrieved_policies = row.get("retrieved_policies") or []
+    if isinstance(retrieved_policies, str):
+        try:
+            retrieved_policies = json.loads(retrieved_policies)
+        except Exception:
+            retrieved_policies = []
+
+    status_str = row.get("status", "PENDING_NURSE_REVIEW")
     try:
-        return _build_case_status_response(row, state_values)
-    except Exception as exc:
-        logger.error("Failed to build CaseStatusResponse for case_id=%s: %s", case_id, exc)
-        raise HTTPException(status_code=500, detail="Failed to retrieve case status.")
+        case_status = CaseStatus(status_str)
+    except ValueError:
+        case_status = CaseStatus.PENDING_NURSE_REVIEW
+
+    submitted_at = row.get("submitted_at")
+    if submitted_at and hasattr(submitted_at, "isoformat"):
+        submitted_at = submitted_at.isoformat()
+
+    return {
+        "case_id": row["case_id"],
+        "status": status_str,
+        "member_id": row.get("member_id", ""),
+        "cpt_code": row.get("cpt_code"),
+        "icd_code": row.get("icd_code"),
+        "provider_npi": row.get("provider_npi"),
+        "clinical_notes": row.get("clinical_notes"),
+        "is_urgent": row.get("is_urgent"),
+        "case_type": row.get("case_type"),
+        "ai_recommendation": row.get("ai_recommendation"),
+        "confidence_score": row.get("confidence_score"),
+        "ai_analysis_status": row.get("ai_analysis_status", "NOT_RUN"),
+        "requires_human_review": case_status == CaseStatus.PENDING_NURSE_REVIEW,
+        "submitted_at": submitted_at,
+        "nurse_decision": row.get("nurse_decision"),
+        "reasoning_output": reasoning_output,
+        "retrieved_policies": retrieved_policies,
+    }
 
 
-@app.post("/prior-auth/{case_id}/review", response_model=CaseStatusResponse)
+@app.post("/prior-auth/{case_id}/review")
 async def submit_nurse_review(case_id: str, nurse_input: NurseDecision):
-    """Record a nurse's review decision and resume the LangGraph workflow.
-
-    Looks up the LangGraph thread_id stored in the DB for this case, resumes
-    the interrupted workflow with the nurse's decision, then patches the case
-    record with the final status and decision string.
-
-    The nurse must provide:
-    - decision: APPROVED | DENIED | REQUEST_MORE_INFO
-    - nurse_id: licensed clinician credential ID (required for HIPAA audit)
-    - override_reason: required if decision differs from AI recommendation
-    """
     logger.info(
         "POST /prior-auth/%s/review | nurse_id=%s decision=%s",
         case_id, nurse_input.nurse_id, nurse_input.decision,
@@ -456,67 +640,65 @@ async def submit_nurse_review(case_id: str, nurse_input: NurseDecision):
 
     row = _get_case_row(case_id)
     if not row:
-        raise HTTPException(status_code=404, detail=f"Case '{case_id}' not found.")
+        raise HTTPException(status_code=404,
+            detail=f"Case '{case_id}' not found.")
 
-    thread_id = row.get("thread_id")
-    if not thread_id:
-        raise HTTPException(
-            status_code=409,
-            detail="This case has no active workflow thread and cannot be reviewed.",
-        )
-
-    # Verify the case is actually waiting for review before resuming
     current_status = row.get("status", "")
     if current_status not in (
-        CaseStatus.PENDING_NURSE_REVIEW.value,
-        CaseStatus.PENDING_AI_REVIEW.value,
+        "PENDING_NURSE_REVIEW",
+        "PENDING_AI_REVIEW",
     ):
-        raise HTTPException(
-            status_code=409,
-            detail=f"Case is in status '{current_status}' and is not awaiting nurse review.",
-        )
+        raise HTTPException(status_code=409,
+            detail=f"Case status is '{current_status}' and cannot be reviewed.")
 
-    config = {"configurable": {"thread_id": thread_id}}
-
-    # Resume the LangGraph workflow.
-    # The graph was interrupted before human_review_node; it continues from
-    # that point with the nurse decision injected into state.
-    nurse_update: dict[str, Any] = {
-        "nurse_decision": nurse_input.decision.value,
-        "nurse_id": nurse_input.nurse_id,
-        "nurse_override_reason": nurse_input.override_reason,
+    status_map = {
+        "APPROVED": "APPROVED",
+        "DENIED": "DENIED",
+        "REQUEST_MORE_INFO": "PENDING_MORE_INFO",
     }
-
-    try:
-        state_values = _stream_to_completion(nurse_update, config)
-    except Exception as exc:
-        logger.error("Graph resume failed for case_id=%s thread_id=%s: %s", case_id, thread_id, exc)
-        raise HTTPException(status_code=500, detail="Failed to process nurse review. Please try again.")
-
-    # audit_output_node ran during the resume and wrote its own record with a
-    # different case_id.  We patch the ORIGINAL record (the one the caller
-    # knows about) with the final status and nurse decision so /status works.
-    final_output = state_values.get("final_output") or {}
-    final_status = final_output.get("status", CaseStatus.PENDING_NURSE_REVIEW.value)
-
-    _update_case_after_review(
-        case_id=case_id,
-        status=final_status,
-        nurse_decision=nurse_input.decision.value,
-        nurse_id=nurse_input.nurse_id,
+    final_status = status_map.get(
+        nurse_input.decision.value, "PENDING_NURSE_REVIEW"
     )
 
+    try:
+        with _get_db() as conn:
+            with conn.cursor() as cur:
+                cur.execute("""
+                    UPDATE prior_auth_requests
+                    SET status = %s,
+                        nurse_decision = %s,
+                        nurse_id = %s,
+                        ai_analysis_status = 'COMPLETE'
+                    WHERE case_id = %s
+                """, (
+                    final_status,
+                    nurse_input.decision.value,
+                    nurse_input.nurse_id,
+                    case_id,
+                ))
+            conn.commit()
+    except Exception as exc:
+        logger.error("Review update failed for case_id=%s: %s", case_id, exc)
+        raise HTTPException(status_code=500,
+            detail="Failed to save decision.")
+
     logger.info(
-        "Nurse review complete | case_id=%s final_status=%s nurse_id=%s",
+        "Nurse review complete | case_id=%s status=%s nurse=%s",
         case_id, final_status, nurse_input.nurse_id,
     )
 
-    # Return the updated status of the original case record
     updated_row = _get_case_row(case_id) or row
-    updated_row["nurse_decision"] = nurse_input.decision.value
+    submitted_at = updated_row.get("submitted_at")
+    if submitted_at and hasattr(submitted_at, "isoformat"):
+        submitted_at = submitted_at.isoformat()
 
-    try:
-        return _build_case_status_response(updated_row, state_values)
-    except Exception as exc:
-        logger.error("Failed to build post-review CaseStatusResponse for %s: %s", case_id, exc)
-        raise HTTPException(status_code=500, detail="Review recorded but failed to build response.")
+    return {
+        "case_id": str(case_id),
+        "status": str(final_status),
+        "member_id": str(updated_row.get("member_id", "")),
+        "nurse_decision": str(nurse_input.decision.value),
+        "nurse_id": str(nurse_input.nurse_id),
+        "ai_recommendation": str(updated_row.get("ai_recommendation", "") or ""),
+        "submitted_at": str(submitted_at or ""),
+        "message": f"Decision recorded: {nurse_input.decision.value}",
+    }
